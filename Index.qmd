@@ -1,0 +1,10 @@
+---
+title: "AI vs. Non-AI Careers: Job Market Prospects in 2024"
+author: 
+  - name: "Your Team Name"
+    affiliation: "Boston University"
+date: "2025-09-25"
+format: html
+bibliography: references.bib
+csl: csl/econometrica.csl
+---
