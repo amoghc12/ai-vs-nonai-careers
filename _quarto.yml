@@ -1,0 +1,14 @@
+project:
+  type: website
+
+website:
+  title: "AI vs. Non-AI Careers"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+
+format:
+  html:
+    theme: default
+    toc: true
