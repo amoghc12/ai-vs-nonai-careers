@@ -1,0 +1,51 @@
+/* Apply modern font */
+body {
+  font-family: "Segoe UI", "Inter", "Lato", Roboto, Helvetica, Arial, sans-serif !important;
+  font-size: 16px;
+  color: #222;
+  line-height: 1.6;
+}
+
+/* Title block container */
+.quarto-title-block {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* Title text */
+.quarto-title-block .title {
+  font-size: 2.4rem !important;
+  font-weight: 700 !important;
+  color: #111 !important;
+  margin-bottom: 0.5rem !important;
+  letter-spacing: -0.02em;
+}
+
+/* Metadata row (authors, affiliation, published) */
+.quarto-title-meta {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  font-size: 0.95rem !important;
+  color: #333 !important;
+  gap: 2rem;
+}
+
+/* Labels (AUTHORS, AFFILIATION, PUBLISHED) */
+.quarto-title-meta-label {
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  font-size: 0.75rem !important;
+  color: #666 !important;
+  margin-bottom: 0.25rem;
+}
+
+/* Metadata values */
+.quarto-title-meta .author,
+.quarto-title-meta .affiliation,
+.quarto-title-meta .published {
+  font-size: 1rem !important;
+  color: #111 !important;
+  line-height: 1.5;
+}

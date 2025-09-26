@@ -1,16 +1,23 @@
 ---
 title: "AI vs. Non-AI Careers: Job Market Prospects in 2024"
-author: 
+author:
   - name: "Group 1"
+    affiliation: "Boston University"
   - name: "Amogh Challa"
   - name: "Othmane Elouardi"
-affiliation: "Boston University"
-date: "2025-09-25"
-format: html
+    
+date: "September 25, 2025"
+format:
+  html:
+    theme: default
+    css: styles.css
 bibliography: references.bib
 csl: csl/econometrica.csl
 ---
 
-# Draft
 
-This is a placeholder. Content coming next.
+
+
+#Draft
+
+Place holder

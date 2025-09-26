@@ -1,0 +1,38 @@
+/* Two-column layout for the title metadata */
+.quarto-title-block .quarto-title-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 2rem;
+}
+
+/* Left: AUTHORS */
+.quarto-title-block .quarto-title-meta-author {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+/* Left under AUTHORS: PUBLISHED */
+.quarto-title-block .quarto-title-meta-date {
+  grid-column: 1;
+  grid-row: 2;
+  margin-top: .25rem;
+}
+
+/* Right: AFFILIATION(S) block */
+.quarto-title-block .quarto-title-meta-affiliations {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+/* Make the heading singular: "Affiliation" */
+.quarto-title-block .quarto-title-meta-affiliations .meta-heading {
+  color: transparent;
+  position: relative;
+}
+.quarto-title-block .quarto-title-meta-affiliations .meta-heading::after {
+  content: "Affiliation";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: inherit;
+}
