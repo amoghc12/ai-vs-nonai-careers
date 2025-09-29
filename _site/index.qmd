@@ -39,3 +39,4 @@ Recent research suggests that AI is more likely to lead to job shifting rather t
  
 New job categories are emerging that didn’t exist just a decade ago. George and George (2025) highlight roles such as AI Solutions Architect and AI Bias Auditor, stating they are “not optional additions but essential components of sustainable AI strategy” (p. 58). Huang (2024) also notes that AI adoption is reshaping labor and capital in various industries, creating fresh opportunities while widening existing skill gaps. These trends underscore that AI isn’t merely automating routine tasks; it’s also driving innovation in job design, making continuous adaptation and skill development essential for today’s workforce.
 
+## References
