@@ -5,7 +5,8 @@ website:
   title: "AI vs. Non-AI Careers"
   navbar:
     left:
-      - href: index.qmd
+      - href: index.html
+
         text: Home
 
 format:
