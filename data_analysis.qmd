@@ -1,0 +1,8 @@
+---
+title: "Data Analysis"
+format: html
+---
+
+# Data Analysis
+
+This is the new Data Analysis page. Here we’ll include cleaning, missing value handling, and type conversions.

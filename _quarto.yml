@@ -5,9 +5,10 @@ website:
   title: "AI vs. Non-AI Careers"
   navbar:
     left:
-      - href: index.html
-
+      - href: index.qmd
         text: Home
+      - href: data_analysis.qmd
+        text: Data Analysis
 
 format:
   html:
