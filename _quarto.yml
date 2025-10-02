@@ -6,9 +6,9 @@ website:
   navbar:
     left:
       - href: index.qmd
-        text: Home
+        text: "Home"
       - href: data_analysis.qmd
-        text: Data Analysis
+        text: "Data Analysis"
 
 format:
   html:

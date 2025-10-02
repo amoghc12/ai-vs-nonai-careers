@@ -11,6 +11,6 @@
     "href": "data_analysis.html",
     "title": "Data Analysis",
     "section": "",
-    "text": "Data Analysis\nThis is the new Data Analysis page. Here we’ll include cleaning, missing value handling, and type conversions."
+    "text": "Data Analysis\nThis is the new Data Analysis page. Here we’ll include cleaning, missing value handling, and type conversions.\n\n\nIntroduction\nThis page documents the data cleaning, missing value handling, and type conversions applied to our dataset.\n\n\nData Cleaning\nExplain why you dropped redundant NAICS/SOC columns and show the code.\n\n\nHandling Missing Values\nShow your strategy: - Median for salaries\n- “Unknown” for categorical fields\n- Drop columns &gt;50% missing\n\n\nType Conversions\nShow how you converted Salary to numeric and POSTED to datetime.\n\n\nDeduplication\nRemove duplicate job postings by TITLE, COMPANY, LOCATION, POSTED."
   }
 ]
