@@ -1,0 +1,125 @@
+---
+title: "Data Analysis"
+subtitle: "Comprehensive Data Cleaning & Exploratory Analysis of Job Market Trends"
+author:
+  - name: "Group 1"
+    affiliation: "Boston University"
+  - name: "Amogh Challa"
+  - name: "Othmane Elouardi"
+date: "September 25, 2025"
+page-layout: article
+toc: true
+toc-location: right
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+
+bibliography: references.bib
+csl: csl/econometrica.csl
+---
+
+
+## Data Cleaning, Missing Values, and Type Conversions
+
+```{python}
+#| echo: false
+import pandas as pd, numpy as np
+import warnings
+from pathlib import Path
+from IPython.display import display
+
+# Suppress warnings (like DtypeWarning)
+warnings.filterwarnings("ignore")
+
+# Load dataset
+csv_path  = Path("Data/lightcast_job_postings.csv")
+df = pd.read_csv(csv_path, low_memory=False)
+
+# Helper function for missing value summary
+def missing_summary(frame: pd.DataFrame) -> pd.DataFrame:
+    ms = frame.isna().mean().mul(100).round(1).rename("% missing")
+    dt = frame.dtypes.astype(str).rename("dtype")
+    return pd.concat([dt, ms], axis=1).sort_values("% missing", ascending=False)
+
+# Baseline snapshot (before cleaning)
+rows_before, cols_before = df.shape
+missing_cells_before = int(df.isna().sum().sum())
+baseline_overview = pd.DataFrame({
+    "metric": ["rows","columns","total missing cells"],
+    "before": [rows_before, cols_before, missing_cells_before]
+})
+baseline_top_missing = missing_summary(df).head(12)
+
+# Show initial outputs
+display(pd.DataFrame({"📌 Step 1: Preview of raw dataset (first 5 rows)": []}))
+display(df.head())
+display(pd.DataFrame({"📌 Step 2: Baseline dataset overview": []}))
+display(baseline_overview)
+display(pd.DataFrame({"📌 Step 3: Top 12 most-missing columns (before cleaning)": []}))
+display(baseline_top_missing)
+
+# ============================
+# Cleaning & Conversions
+# ============================
+
+# Standardize column names
+df.columns = (df.columns.str.strip()
+              .str.replace(r"\s+", "_", regex=True)
+              .str.upper())
+
+# Drop irrelevant columns
+to_drop = ["ID","URL","ACTIVE_URLS","DUPLICATES","LAST_UPDATED_TIMESTAMP",
+           "NAICS2","NAICS3","NAICS4","NAICS5","NAICS6","SOC_2","SOC_3","SOC_5"]
+df.drop(columns=[c for c in to_drop if c in df.columns],
+        inplace=True, errors="ignore")
+
+# Convert dates
+for col in [c for c in ["POSTED","UPDATED","DATE","JOB_POST_DATE"] if c in df.columns]:
+    df[col] = pd.to_datetime(df[col], errors="coerce")
+
+# Convert salary columns
+for col in ["SALARY","MINSALARY","MAXSALARY","ANNUAL_SALARY","HOURLY_RATE","PAY"]:
+    if col in df.columns:
+        df[col] = (df[col].astype(str)
+                   .str.replace(r"[^0-9.\-]", "", regex=True)
+                   .replace({"": np.nan, "-": np.nan})
+                   .astype(float))
+
+# Drop columns with >50% missing
+df.dropna(axis=1, thresh=int(len(df)*0.5), inplace=True)
+
+# Fill missing numeric values
+num_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+if num_cols:
+    if "INDUSTRY" in df.columns:
+        df[num_cols] = df[num_cols].fillna(df.groupby("INDUSTRY")[num_cols].transform("median"))
+    df[num_cols] = df[num_cols].fillna(df[num_cols].median())
+
+# Fill missing categoricals with "Unknown"
+for c in df.select_dtypes(include=["object"]).columns:
+    df[c] = df[c].fillna("Unknown")
+
+# Remove duplicates by key fields
+dup_key = [c for c in ["TITLE","COMPANY","LOCATION","POSTED"] if c in df.columns]
+if dup_key:
+    df = df.drop_duplicates(subset=dup_key, keep="first")
+
+# Snapshot after cleaning
+rows_after, cols_after = df.shape
+missing_cells_after = int(df.isna().sum().sum())
+summary_table = pd.DataFrame({
+    "metric": ["rows","columns","total missing cells"],
+    "before": [rows_before, cols_before, missing_cells_before],
+    "after":  [rows_after,  cols_after,  missing_cells_after]
+})
+after_top_missing = missing_summary(df).head(12)
+
+# Show cleaned outputs
+display(pd.DataFrame({"📌 Step 4: Cleaned dataset preview (first 5 rows)": []}))
+display(df.head())
+display(pd.DataFrame({"📌 Step 5: Dataset summary (before vs after cleaning)": []}))
+display(summary_table)
+display(pd.DataFrame({"📌 Step 6: Top 12 most-missing columns (after cleaning)": []}))
+display(after_top_missing)
+```

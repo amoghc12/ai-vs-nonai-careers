@@ -11,7 +11,7 @@
 <meta name="author" content="Othmane Elouardi">
 <meta name="dcterms.date" content="2025-09-25">
 
-<title>AI vs.&nbsp;Non-AI Careers: Job Market Prospects in 2024 – AI vs. Non-AI Careers</title>
+<title>Data Analysis – AI vs.&nbsp;Non-AI Careers</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -24,29 +24,10 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for citations */
-div.csl-bib-body { }
-div.csl-entry {
-  clear: both;
-}
-.hanging-indent div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
-}
-div.csl-left-margin {
-  min-width:2em;
-  float:left;
-}
-div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
-}
-div.csl-indent {
-  margin-left: 2em;
-}</style>
+</style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -91,6 +72,12 @@ div.csl-indent {
     "search-label": "Search"
   }
 }</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
 
 
 <link rel="stylesheet" href="styles.css">
@@ -120,7 +107,7 @@ div.csl-indent {
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./data_analysis.html"> 
+    <a class="nav-link active" href="./data_analysis.html" aria-current="page"> 
 <span class="menu-text">Data Analysis</span></a>
   </li>  
 </ul>
@@ -139,9 +126,7 @@ div.csl-indent {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
-  <li><a href="#research-rationale" id="toc-research-rationale" class="nav-link" data-scroll-target="#research-rationale">Research Rationale</a></li>
-  <li><a href="#literature-review" id="toc-literature-review" class="nav-link" data-scroll-target="#literature-review">Literature Review</a></li>
+  <li><a href="#data-cleaning-missing-values-and-type-conversions" id="toc-data-cleaning-missing-values-and-type-conversions" class="nav-link active" data-scroll-target="#data-cleaning-missing-values-and-type-conversions">Data Cleaning, Missing Values, and Type Conversions</a></li>
   </ul>
 </nav>
     </div>
@@ -150,7 +135,8 @@ div.csl-indent {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">AI vs.&nbsp;Non-AI Careers: Job Market Prospects in 2024</h1>
+<h1 class="title">Data Analysis</h1>
+<p class="subtitle lead">Comprehensive Data Cleaning &amp; Exploratory Analysis of Job Market Trends</p>
 </div>
 
 
@@ -196,45 +182,659 @@ div.csl-indent {
 </header>
 
 
-<section id="introduction" class="level1">
-<h1>Introduction</h1>
-<p>As of 2024, the global job market stands at a crucial crossroads, significantly shaped by the ongoing evolution of artificial intelligence (AI). This technology is transforming various sectors, including healthcare, finance, retail, and education. The shifts aren’t just about the types of jobs available; they’re also changing the way we work. Current studies reveal that while AI drives job displacement in routine and clerical roles, it simultaneously creates new opportunities that focus on technology, data, and human interaction (<span class="citation" data-cites="George_2024">George (<a href="#ref-George_2024" role="doc-biblioref">(2024)</a>)</span>; <span class="citation" data-cites="Huang">Huang (<a href="#ref-Huang" role="doc-biblioref">(2024)</a>)</span>). Tools like ChatGPT have added complexity, with predictions suggesting that over 30% of jobs could experience significant changes (<span class="citation" data-cites="Zarifhonarvar">Zarifhonarvar (<a href="#ref-Zarifhonarvar" role="doc-biblioref">(2024)</a>)</span>). New roles, such as AI Solutions Architect and AI Bias Auditor, are emerging, highlighting the need for expertise in integrating AI into our workflows (<span class="citation" data-cites="George_George_2025">George and George (<a href="#ref-George_George_2025" role="doc-biblioref">(2025)</a>)</span>). It’s clear that AI is not just about taking jobs away; it’s also sparking transformation, urging us to adapt, keep learning, and embrace innovation as we navigate the evolving career landscape.</p>
-<p>As AI has gone from murmurs in the background to its sudden immediate dependencies for many many things in today’s age, questions, typically from fear, arise in the eye of the public. Will AI get rid of many jobs, crippling the job market? How is my job security in my current role going to change over the next couple of years? While AI brings humanity many benefits, it also has a very large grey area that could shift society in a negative direction if not managed properly. One thing that always pushes people forward in times of immense and sudden change, such as now, is to adapt. <span class="citation" data-cites="Rion">Rion (<a href="#ref-Rion" role="doc-biblioref">(2025)</a>)</span> states that “…there is a reduced risk of displacement occurring for high-skilled workers with AI encompassing elements of enhancement, whereas low-skilled workers are most at risk of displacement” (p.&nbsp;2). The big hope with AI is that job displacement could potentially evolve into certain jobs and industries being repurposed for AI-centric functionalities. The change that AI has brought to the world and will continuously do, and in even bigger waves, is quickly making businesses adapt to the immediate benefits that it brings, but this is also a signal that individuals must pick up these skills to have a fighting chance in a job market that is turning into something entirely different.</p>
+<section id="data-cleaning-missing-values-and-type-conversions" class="level2">
+<h2 class="anchored" data-anchor-id="data-cleaning-missing-values-and-type-conversions">Data Cleaning, Missing Values, and Type Conversions</h2>
+<div id="b73eecb7" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">📌 Step 1: Preview of raw dataset (first 5 rows)</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">ID</th>
+<th data-quarto-table-cell-role="th">LAST_UPDATED_DATE</th>
+<th data-quarto-table-cell-role="th">LAST_UPDATED_TIMESTAMP</th>
+<th data-quarto-table-cell-role="th">DUPLICATES</th>
+<th data-quarto-table-cell-role="th">POSTED</th>
+<th data-quarto-table-cell-role="th">EXPIRED</th>
+<th data-quarto-table-cell-role="th">DURATION</th>
+<th data-quarto-table-cell-role="th">SOURCE_TYPES</th>
+<th data-quarto-table-cell-role="th">SOURCES</th>
+<th data-quarto-table-cell-role="th">URL</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">NAICS_2022_2</th>
+<th data-quarto-table-cell-role="th">NAICS_2022_2_NAME</th>
+<th data-quarto-table-cell-role="th">NAICS_2022_3</th>
+<th data-quarto-table-cell-role="th">NAICS_2022_3_NAME</th>
+<th data-quarto-table-cell-role="th">NAICS_2022_4</th>
+<th data-quarto-table-cell-role="th">NAICS_2022_4_NAME</th>
+<th data-quarto-table-cell-role="th">NAICS_2022_5</th>
+<th data-quarto-table-cell-role="th">NAICS_2022_5_NAME</th>
+<th data-quarto-table-cell-role="th">NAICS_2022_6</th>
+<th data-quarto-table-cell-role="th">NAICS_2022_6_NAME</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>1f57d95acf4dc67ed2819eb12f049f6a5c11782c</td>
+<td>9/6/2024</td>
+<td>2024-09-06 20:32:57.352 Z</td>
+<td>0.0</td>
+<td>6/2/2024</td>
+<td>6/8/2024</td>
+<td>6.0</td>
+<td>[\n "Company"\n]</td>
+<td>[\n "brassring.com"\n]</td>
+<td>[\n "https://sjobs.brassring.com/TGnewUI/Sear...</td>
+<td>...</td>
+<td>44.0</td>
+<td>Retail Trade</td>
+<td>441.0</td>
+<td>Motor Vehicle and Parts Dealers</td>
+<td>4413.0</td>
+<td>Automotive Parts, Accessories, and Tire Retailers</td>
+<td>44133.0</td>
+<td>Automotive Parts and Accessories Retailers</td>
+<td>441330.0</td>
+<td>Automotive Parts and Accessories Retailers</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>0cb072af26757b6c4ea9464472a50a443af681ac</td>
+<td>8/2/2024</td>
+<td>2024-08-02 17:08:58.838 Z</td>
+<td>0.0</td>
+<td>6/2/2024</td>
+<td>8/1/2024</td>
+<td>NaN</td>
+<td>[\n "Job Board"\n]</td>
+<td>[\n "maine.gov"\n]</td>
+<td>[\n "https://joblink.maine.gov/jobs/1085740"\n]</td>
+<td>...</td>
+<td>56.0</td>
+<td>Administrative and Support and Waste Managemen...</td>
+<td>561.0</td>
+<td>Administrative and Support Services</td>
+<td>5613.0</td>
+<td>Employment Services</td>
+<td>56132.0</td>
+<td>Temporary Help Services</td>
+<td>561320.0</td>
+<td>Temporary Help Services</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>85318b12b3331fa490d32ad014379df01855c557</td>
+<td>9/6/2024</td>
+<td>2024-09-06 20:32:57.352 Z</td>
+<td>1.0</td>
+<td>6/2/2024</td>
+<td>7/7/2024</td>
+<td>35.0</td>
+<td>[\n "Job Board"\n]</td>
+<td>[\n "dejobs.org"\n]</td>
+<td>[\n "https://dejobs.org/dallas-tx/data-analys...</td>
+<td>...</td>
+<td>52.0</td>
+<td>Finance and Insurance</td>
+<td>524.0</td>
+<td>Insurance Carriers and Related Activities</td>
+<td>5242.0</td>
+<td>Agencies, Brokerages, and Other Insurance Rela...</td>
+<td>52429.0</td>
+<td>Other Insurance Related Activities</td>
+<td>524291.0</td>
+<td>Claims Adjusting</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>1b5c3941e54a1889ef4f8ae55b401a550708a310</td>
+<td>9/6/2024</td>
+<td>2024-09-06 20:32:57.352 Z</td>
+<td>1.0</td>
+<td>6/2/2024</td>
+<td>7/20/2024</td>
+<td>48.0</td>
+<td>[\n "Job Board"\n]</td>
+<td>[\n "disabledperson.com",\n "dejobs.org"\n]</td>
+<td>[\n "https://www.disabledperson.com/jobs/5948...</td>
+<td>...</td>
+<td>52.0</td>
+<td>Finance and Insurance</td>
+<td>522.0</td>
+<td>Credit Intermediation and Related Activities</td>
+<td>5221.0</td>
+<td>Depository Credit Intermediation</td>
+<td>52211.0</td>
+<td>Commercial Banking</td>
+<td>522110.0</td>
+<td>Commercial Banking</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>cb5ca25f02bdf25c13edfede7931508bfd9e858f</td>
+<td>6/19/2024</td>
+<td>2024-06-19 07:00:00.000 Z</td>
+<td>0.0</td>
+<td>6/2/2024</td>
+<td>6/17/2024</td>
+<td>15.0</td>
+<td>[\n "FreeJobBoard"\n]</td>
+<td>[\n "craigslist.org"\n]</td>
+<td>[\n "https://modesto.craigslist.org/sls/77475...</td>
+<td>...</td>
+<td>99.0</td>
+<td>Unclassified Industry</td>
+<td>999.0</td>
+<td>Unclassified Industry</td>
+<td>9999.0</td>
+<td>Unclassified Industry</td>
+<td>99999.0</td>
+<td>Unclassified Industry</td>
+<td>999999.0</td>
+<td>Unclassified Industry</td>
+</tr>
+</tbody>
+</table>
+
+<p>5 rows × 131 columns</p>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">📌 Step 2: Baseline dataset overview</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">metric</th>
+<th data-quarto-table-cell-role="th">before</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>rows</td>
+<td>72498</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>columns</td>
+<td>131</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>total missing cells</td>
+<td>634575</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">📌 Step 3: Top 12 most-missing columns (before cleaning)</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">dtype</th>
+<th data-quarto-table-cell-role="th">% missing</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">ACTIVE_SOURCES_INFO</th>
+<td>object</td>
+<td>89.2</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">MAX_YEARS_EXPERIENCE</th>
+<td>float64</td>
+<td>88.4</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">MAX_EDULEVELS_NAME</th>
+<td>object</td>
+<td>77.5</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">MAX_EDULEVELS</th>
+<td>float64</td>
+<td>77.5</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">LIGHTCAST_SECTORS</th>
+<td>object</td>
+<td>75.5</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">LIGHTCAST_SECTORS_NAME</th>
+<td>object</td>
+<td>75.5</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">SALARY</th>
+<td>float64</td>
+<td>57.5</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">SALARY_FROM</th>
+<td>float64</td>
+<td>55.3</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">SALARY_TO</th>
+<td>float64</td>
+<td>55.3</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">ORIGINAL_PAY_PERIOD</th>
+<td>object</td>
+<td>55.3</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">DURATION</th>
+<td>float64</td>
+<td>37.7</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">MIN_YEARS_EXPERIENCE</th>
+<td>float64</td>
+<td>31.9</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">📌 Step 4: Cleaned dataset preview (first 5 rows)</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">LAST_UPDATED_DATE</th>
+<th data-quarto-table-cell-role="th">POSTED</th>
+<th data-quarto-table-cell-role="th">EXPIRED</th>
+<th data-quarto-table-cell-role="th">DURATION</th>
+<th data-quarto-table-cell-role="th">SOURCE_TYPES</th>
+<th data-quarto-table-cell-role="th">SOURCES</th>
+<th data-quarto-table-cell-role="th">TITLE_RAW</th>
+<th data-quarto-table-cell-role="th">BODY</th>
+<th data-quarto-table-cell-role="th">MODELED_EXPIRED</th>
+<th data-quarto-table-cell-role="th">MODELED_DURATION</th>
+<th data-quarto-table-cell-role="th">...</th>
+<th data-quarto-table-cell-role="th">NAICS_2022_2</th>
+<th data-quarto-table-cell-role="th">NAICS_2022_2_NAME</th>
+<th data-quarto-table-cell-role="th">NAICS_2022_3</th>
+<th data-quarto-table-cell-role="th">NAICS_2022_3_NAME</th>
+<th data-quarto-table-cell-role="th">NAICS_2022_4</th>
+<th data-quarto-table-cell-role="th">NAICS_2022_4_NAME</th>
+<th data-quarto-table-cell-role="th">NAICS_2022_5</th>
+<th data-quarto-table-cell-role="th">NAICS_2022_5_NAME</th>
+<th data-quarto-table-cell-role="th">NAICS_2022_6</th>
+<th data-quarto-table-cell-role="th">NAICS_2022_6_NAME</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>9/6/2024</td>
+<td>2024-06-02</td>
+<td>6/8/2024</td>
+<td>6.0</td>
+<td>[\n "Company"\n]</td>
+<td>[\n "brassring.com"\n]</td>
+<td>Enterprise Analyst (II-III)</td>
+<td>31-May-2024\n\nEnterprise Analyst (II-III)\n\n...</td>
+<td>6/8/2024</td>
+<td>6.0</td>
+<td>...</td>
+<td>44.0</td>
+<td>Retail Trade</td>
+<td>441.0</td>
+<td>Motor Vehicle and Parts Dealers</td>
+<td>4413.0</td>
+<td>Automotive Parts, Accessories, and Tire Retailers</td>
+<td>44133.0</td>
+<td>Automotive Parts and Accessories Retailers</td>
+<td>441330.0</td>
+<td>Automotive Parts and Accessories Retailers</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>8/2/2024</td>
+<td>2024-06-02</td>
+<td>8/1/2024</td>
+<td>18.0</td>
+<td>[\n "Job Board"\n]</td>
+<td>[\n "maine.gov"\n]</td>
+<td>Oracle Consultant - Reports (3592)</td>
+<td>Oracle Consultant - Reports (3592)\n\nat SMX i...</td>
+<td>8/1/2024</td>
+<td>16.0</td>
+<td>...</td>
+<td>56.0</td>
+<td>Administrative and Support and Waste Managemen...</td>
+<td>561.0</td>
+<td>Administrative and Support Services</td>
+<td>5613.0</td>
+<td>Employment Services</td>
+<td>56132.0</td>
+<td>Temporary Help Services</td>
+<td>561320.0</td>
+<td>Temporary Help Services</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>9/6/2024</td>
+<td>2024-06-02</td>
+<td>7/7/2024</td>
+<td>35.0</td>
+<td>[\n "Job Board"\n]</td>
+<td>[\n "dejobs.org"\n]</td>
+<td>Data Analyst</td>
+<td>Taking care of people is at the heart of every...</td>
+<td>6/10/2024</td>
+<td>8.0</td>
+<td>...</td>
+<td>52.0</td>
+<td>Finance and Insurance</td>
+<td>524.0</td>
+<td>Insurance Carriers and Related Activities</td>
+<td>5242.0</td>
+<td>Agencies, Brokerages, and Other Insurance Rela...</td>
+<td>52429.0</td>
+<td>Other Insurance Related Activities</td>
+<td>524291.0</td>
+<td>Claims Adjusting</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>9/6/2024</td>
+<td>2024-06-02</td>
+<td>7/20/2024</td>
+<td>48.0</td>
+<td>[\n "Job Board"\n]</td>
+<td>[\n "disabledperson.com",\n "dejobs.org"\n]</td>
+<td>Sr. Lead Data Mgmt. Analyst - SAS Product Owner</td>
+<td>About this role:\n\nWells Fargo is looking for...</td>
+<td>6/12/2024</td>
+<td>10.0</td>
+<td>...</td>
+<td>52.0</td>
+<td>Finance and Insurance</td>
+<td>522.0</td>
+<td>Credit Intermediation and Related Activities</td>
+<td>5221.0</td>
+<td>Depository Credit Intermediation</td>
+<td>52211.0</td>
+<td>Commercial Banking</td>
+<td>522110.0</td>
+<td>Commercial Banking</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>6/19/2024</td>
+<td>2024-06-02</td>
+<td>6/17/2024</td>
+<td>15.0</td>
+<td>[\n "FreeJobBoard"\n]</td>
+<td>[\n "craigslist.org"\n]</td>
+<td>Comisiones de $1000 - $3000 por semana... Comi...</td>
+<td>Comisiones de $1000 - $3000 por semana... Comi...</td>
+<td>6/17/2024</td>
+<td>15.0</td>
+<td>...</td>
+<td>99.0</td>
+<td>Unclassified Industry</td>
+<td>999.0</td>
+<td>Unclassified Industry</td>
+<td>9999.0</td>
+<td>Unclassified Industry</td>
+<td>99999.0</td>
+<td>Unclassified Industry</td>
+<td>999999.0</td>
+<td>Unclassified Industry</td>
+</tr>
+</tbody>
+</table>
+
+<p>5 rows × 108 columns</p>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">📌 Step 5: Dataset summary (before vs after cleaning)</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">metric</th>
+<th data-quarto-table-cell-role="th">before</th>
+<th data-quarto-table-cell-role="th">after</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>rows</td>
+<td>72498</td>
+<td>69198</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>columns</td>
+<td>131</td>
+<td>108</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>total missing cells</td>
+<td>634575</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">📌 Step 6: Top 12 most-missing columns (after cleaning)</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">dtype</th>
+<th data-quarto-table-cell-role="th">% missing</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">LAST_UPDATED_DATE</th>
+<td>object</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">POSTED</th>
+<td>datetime64[ns]</td>
+<td>0.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">EXPIRED</th>
+<td>object</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">DURATION</th>
+<td>float64</td>
+<td>0.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">SOURCE_TYPES</th>
+<td>object</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">SOURCES</th>
+<td>object</td>
+<td>0.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">TITLE_RAW</th>
+<td>object</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">BODY</th>
+<td>object</td>
+<td>0.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">MODELED_EXPIRED</th>
+<td>object</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">MODELED_DURATION</th>
+<td>float64</td>
+<td>0.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">COMPANY</th>
+<td>float64</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">COMPANY_NAME</th>
+<td>object</td>
+<td>0.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+
+
 </section>
-<section id="research-rationale" class="level1">
-<h1>Research Rationale</h1>
-<p>The increasing involvement of AI in various industries necessitates a deeper understanding of its impact on employment. Many conversations often frame AI as a threat to job security, but the reality is more nuanced. Research indicates that AI often triggers changes in work dynamics instead of leading to outright job loss. While there is no denial that some occupations in a number of sectors will be significantly altered if not replaced, as <span class="citation" data-cites="George_2024">George (<a href="#ref-George_2024" role="doc-biblioref">(2024)</a>)</span> points out, “AI is expected to result in more job movement than job elimination by boosting productivity, driving economic growth, altering job structures, and enabling sectors to transition” (p.&nbsp;17). Recognizing these trends is crucial for both workers and policymakers as they work on strategies to ensure smooth transitions and equitable opportunities.</p>
-<p>Additionally, the speed of this transformation is unlike anything we’ve seen before. Historical technological shifts unfolded over decades, while AI adoption is rapidly changing industries in just a few years. Today, workers find themselves in a labor market where traditional career paths exist alongside new, AI-driven opportunities. <span class="citation" data-cites="Zarifhonarvar">Zarifhonarvar (<a href="#ref-Zarifhonarvar" role="doc-biblioref">(2024)</a>)</span> emphasizes this urgency by stating, “32.8% of occupations could be fully impacted by ChatGPT, while 36.5% might experience a partial impact and 30.7% are likely to remain unaffected” (p.&nbsp;100). This highlights the extensive and uneven impacts of AI disruption, emphasizing the need to examine its implications for job security, industry demand, and the emergence of new career fields. The function of this study is to assess the current state of the impact of AI on society, as of 2024, and try to get a better understanding of its pros and cons on the job market. According to <span class="citation" data-cites="Shen_1970">Shen (<a href="#ref-Shen_1970" role="doc-biblioref">(2024)</a>)</span>, “AI technology is correlated with increasing the total number of jobs on the market. Thanks to more efficient labor productivity, capital deepening, and specialized division of labor from integrating digital technology, AI offsets the negative effects of robots on employment and significantly increases manufacturing enterprises’ market size and production scale, with a significant job creation effect” (p.&nbsp;1). With the increased rate of integration of AI in most processes nowadays, there is actually a shift in the market and less of a depletion of jobs/job growth. Low-skilled workers have the biggest risk of being replaced by AI simply because the most mundane, repeatable jobs are the easiest for machines to replace. Developing certain skills relating to AI will prove very useful in this current job market because it is still such a fresh concept to the general population.</p>
-</section>
-<section id="literature-review" class="level1">
-<h1>Literature Review</h1>
-<p>Recent research suggests that AI is more likely to lead to job shifting rather than large-scale, permanent job losses. While it’s true that some sectors may experience job displacement, <span class="citation" data-cites="George_2024">George (<a href="#ref-George_2024" role="doc-biblioref">(2024)</a>)</span> argues that the productivity gains associated with AI adoption consistently generate new employment opportunities. He explains that “displaced workers can transfer into new occupational jobs with adequate skilling and transition support rather than facing long periods of unemployment” (p.&nbsp;17). This theme aligns with broader economic evidence showing that technological advancements typically create more jobs than they eliminate, even if the transition process can be rocky.</p>
-<p>New job categories are emerging that didn’t exist just a decade ago. <span class="citation" data-cites="George_George_2025">George and George (<a href="#ref-George_George_2025" role="doc-biblioref">(2025)</a>)</span> highlight roles such as AI Solutions Architect and AI Bias Auditor, stating they are “not optional additions but essential components of sustainable AI strategy” (p.&nbsp;58). <span class="citation" data-cites="Huang">Huang (<a href="#ref-Huang" role="doc-biblioref">(2024)</a>)</span> also notes that AI adoption is reshaping labor and capital in various industries, creating fresh opportunities while widening existing skill gaps. These trends underscore that AI isn’t merely automating routine tasks; it’s also driving innovation in job design, making continuous adaptation and skill development essential for today’s workforce.</p>
 
-
-
-</section>
-
-<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
-<div id="ref-George_2024" class="csl-entry" role="listitem">
-<span class="smallcaps">George, Dr. A. S.</span> (2024): <span>“<a href="https://doi.org/10.5281/zenodo.10936490">Artificial intelligence and the future of work: Job shifting not job loss</a>,”</span> <em>Zenodo</em>, 2, 17–21.
-</div>
-<div id="ref-George_George_2025" class="csl-entry" role="listitem">
-<span class="smallcaps">George, Dr. A. S., and A. S. H. George</span>. (2025): <span>“<a href="https://doi.org/10.5281/zenodo.17009242">The AI job revolution - how emerging roles are reshaping the future of work and creating new career pathways</a>,”</span> <em>Zenodo</em>, 3, 58–61.
-</div>
-<div id="ref-Huang" class="csl-entry" role="listitem">
-<span class="smallcaps">Huang, X.</span> (2024): <span>“<a href="https://doi.org/10.1371/journal.pone.0295150">Dynamics of labor and capital in AI vs. Non-AI industries: A two-industry model analysis</a>,”</span> <em>PLOS ONE</em>, 19, 1–1.
-</div>
-<div id="ref-Rion" class="csl-entry" role="listitem">
-<span class="smallcaps">Rion, A.</span> (2025): <span>“<a href="https://doi.org/10.2139/ssrn.5380481">Will AI replace human jobs? A literature review</a>,”</span> <em>SSRN</em>, 1, 1–1.
-</div>
-<div id="ref-Shen_1970" class="csl-entry" role="listitem">
-<span class="smallcaps">Shen, Y.</span> (2024): <span>“<a href="https://doi.org/10.1007/s10644-024-09629-6">Will AI replace human jobs? A literature review</a>,”</span> <em>Economic Change and Restructuring</em>, 57, 1–1.
-</div>
-<div id="ref-Zarifhonarvar" class="csl-entry" role="listitem">
-<span class="smallcaps">Zarifhonarvar, A.</span> (2024): <span>“<a href="https://doi.org/10.1108/JEBDE-10-2">Economics of chatgpt: A labor market view on the occupational impact of artificial intelligence | journal of electronic business &amp; digital economics | emerald publishing</a>,”</span> <em>Emerald</em>, 3, 100–116.
-</div>
-</div></section></div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
