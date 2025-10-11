@@ -127,6 +127,8 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#data-cleaning-missing-values-and-type-conversions" id="toc-data-cleaning-missing-values-and-type-conversions" class="nav-link active" data-scroll-target="#data-cleaning-missing-values-and-type-conversions">Data Cleaning, Missing Values, and Type Conversions</a></li>
+  <li><a href="#identifying-and-removing-redundant-columns-duplicates-and-extreme-values" id="toc-identifying-and-removing-redundant-columns-duplicates-and-extreme-values" class="nav-link" data-scroll-target="#identifying-and-removing-redundant-columns-duplicates-and-extreme-values">Identifying and removing redundant columns, duplicates, and extreme values</a></li>
+  <li><a href="#exploratory-data-analysis-eda-with-visualizations" id="toc-exploratory-data-analysis-eda-with-visualizations" class="nav-link" data-scroll-target="#exploratory-data-analysis-eda-with-visualizations">Exploratory Data Analysis (EDA) with visualizations</a></li>
   </ul>
 </nav>
     </div>
@@ -184,7 +186,7 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="data-cleaning-missing-values-and-type-conversions" class="level2">
 <h2 class="anchored" data-anchor-id="data-cleaning-missing-values-and-type-conversions">Data Cleaning, Missing Values, and Type Conversions</h2>
-<div id="b73eecb7" class="cell" data-execution_count="1">
+<div id="51ad3c34" class="cell" data-execution_count="1">
 <div class="cell-output cell-output-display">
 <div>
 
@@ -827,6 +829,969 @@ ul.task-list li input[type="checkbox"] {
 </tbody>
 </table>
 
+</div>
+</div>
+</div>
+</section>
+<section id="identifying-and-removing-redundant-columns-duplicates-and-extreme-values" class="level2">
+<h2 class="anchored" data-anchor-id="identifying-and-removing-redundant-columns-duplicates-and-extreme-values">Identifying and removing redundant columns, duplicates, and extreme values</h2>
+<div id="ae99959f" class="cell" data-execution_count="2">
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">📌 Step 7: Redundant columns removed (preview)</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Dropped Columns</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>COMPANY_NAME</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>COMPANY_RAW</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>COUNTY_INCOMING</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>COUNTY_NAME_INCOMING</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>COUNTY_NAME_OUTGOING</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>COUNTY_OUTGOING</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>MODELED_DURATION</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>MODELED_EXPIRED</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>MSA_INCOMING</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>MSA_NAME_INCOMING</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>MSA_NAME_OUTGOING</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>MSA_OUTGOING</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>NAICS2_NAME</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>NAICS3_NAME</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">14</th>
+<td>NAICS4_NAME</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">15</th>
+<td>NAICS5_NAME</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">16</th>
+<td>SOURCES</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">17</th>
+<td>SOURCE_TYPES</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">18</th>
+<td>TITLE_CLEAN</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">19</th>
+<td>TITLE_NAME</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">20</th>
+<td>TITLE_RAW</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">metric</th>
+<th data-quarto-table-cell-role="th">before</th>
+<th data-quarto-table-cell-role="th">after</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>rows</td>
+<td>69198</td>
+<td>69198</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>columns</td>
+<td>108</td>
+<td>87</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">📌 Step 8: Deduplication summary</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">dedupe_key_used</th>
+<th data-quarto-table-cell-role="th">rows_removed</th>
+<th data-quarto-table-cell-role="th">rows_after</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>TITLE, COMPANY, LOCATION, POSTED</td>
+<td>0</td>
+<td>69198</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">📌 Step 9: Salary Outlier Summary (IQR)</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">salary_column_used</th>
+<th data-quarto-table-cell-role="th">iqr_low_threshold</th>
+<th data-quarto-table-cell-role="th">iqr_high_threshold</th>
+<th data-quarto-table-cell-role="th">values_set_to_NaN</th>
+<th data-quarto-table-cell-role="th">remaining_with_salary</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>ANNUAL_SALARY</td>
+<td>-84114800.0</td>
+<td>140458000.0</td>
+<td>5000</td>
+<td>25700</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">📌 Step 10: Cleaned dataset saved</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>Data/lightcast_clean_final.csv</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="exploratory-data-analysis-eda-with-visualizations" class="level1">
+<h1>Exploratory Data Analysis (EDA) with visualizations</h1>
+<div id="e5714f4d" class="cell" data-execution_count="3">
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">### 5.1 Job Postings by Industry</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">postings</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">NAICS_2022_6_NAME</th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Unclassified Industry</th>
+<td>9205</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Custom Computer Programming Services</th>
+<td>4905</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Administrative Management and General Management Consulting Services</th>
+<td>4499</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Employment Placement Agencies</th>
+<td>4316</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Computer Systems Design Services</th>
+<td>4154</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Commercial Banking</th>
+<td>1953</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Offices of Certified Public Accountants</th>
+<td>1693</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Direct Health and Medical Insurance Carriers</th>
+<td>1453</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Temporary Help Services</th>
+<td>1430</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Other Computer Related Services</th>
+<td>1362</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Colleges, Universities, and Professional Schools</th>
+<td>1342</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">General Medical and Surgical Hospitals</th>
+<td>1067</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Other Scientific and Technical Consulting Services</th>
+<td>1042</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Other Management Consulting Services</th>
+<td>1012</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">All Other Professional, Scientific, and Technical Services</th>
+<td>1010</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;Figure size 864x480 with 0 Axes&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="data_analysis_files/figure-html/cell-4-output-4.png" width="734" height="470" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">### 5.2 Salary Distribution by Industry</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;Figure size 960x480 with 0 Axes&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="data_analysis_files/figure-html/cell-4-output-7.png" width="743" height="468" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">n</th>
+<th data-quarto-table-cell-role="th">median</th>
+<th data-quarto-table-cell-role="th">p25</th>
+<th data-quarto-table-cell-role="th">p75</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">NAICS_2022_6_NAME</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Unclassified Industry</th>
+<td>2794</td>
+<td>125000.0</td>
+<td>83875.0</td>
+<td>2.062759e+05</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Administrative Management and General Management Consulting Services</th>
+<td>2791</td>
+<td>151100.0</td>
+<td>120000.0</td>
+<td>1.749000e+05</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Computer Systems Design Services</th>
+<td>1610</td>
+<td>125900.0</td>
+<td>116500.0</td>
+<td>1.387500e+05</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Direct Health and Medical Insurance Carriers</th>
+<td>1047</td>
+<td>104000.0</td>
+<td>89000.0</td>
+<td>1.353000e+05</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Commercial Banking</th>
+<td>931</td>
+<td>124497.0</td>
+<td>98900.0</td>
+<td>1.572000e+05</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Custom Computer Programming Services</th>
+<td>789</td>
+<td>105400.0</td>
+<td>90200.0</td>
+<td>1.300000e+05</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Employment Placement Agencies</th>
+<td>755</td>
+<td>155500.0</td>
+<td>105000.0</td>
+<td>8.220160e+07</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Colleges, Universities, and Professional Schools</th>
+<td>645</td>
+<td>80000.0</td>
+<td>65449.0</td>
+<td>1.275000e+05</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">### 5.3 Remote vs. On-Site Jobs</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">postings</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">REMOTE_TYPE_NAME</th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">[None]</th>
+<td>54199</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Remote</th>
+<td>11743</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Hybrid Remote</th>
+<td>2151</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Not Remote</th>
+<td>1088</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">Unknown</th>
+<td>17</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;Figure size 480x480 with 0 Axes&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="data_analysis_files/figure-html/cell-4-output-12.png" width="520" height="470" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">### 5.4 Job Postings Over Time</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">postings</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">POSTED</th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2024-05-01</th>
+<td>13963</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2024-06-01</th>
+<td>13725</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2024-07-01</th>
+<td>12183</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2024-08-01</th>
+<td>14596</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2024-09-01</th>
+<td>14730</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="data_analysis_files/figure-html/cell-4-output-15.png" width="854" height="374" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">### 5.5 Top Companies</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">postings</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">COMPANY</th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0.0</th>
+<td>3854</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5732448.0</th>
+<td>2392</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8592955.0</th>
+<td>1416</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2481979.0</th>
+<td>824</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4305.0</th>
+<td>433</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">51287482.0</th>
+<td>428</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">34422280.0</th>
+<td>422</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">6915630.0</th>
+<td>399</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">89628092.0</th>
+<td>373</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2233642.0</th>
+<td>355</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">11402410.0</th>
+<td>352</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9948378.0</th>
+<td>329</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">86630087.0</th>
+<td>326</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">79037368.0</th>
+<td>325</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">582288.0</th>
+<td>309</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;Figure size 864x480 with 0 Axes&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="data_analysis_files/figure-html/cell-4-output-19.png" width="662" height="470" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">### 5.6 Job Postings by State</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">postings</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">STATE</th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">48.0</th>
+<td>7799</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">6.0</th>
+<td>6831</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12.0</th>
+<td>3492</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">51.0</th>
+<td>3477</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">17.0</th>
+<td>3384</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">36.0</th>
+<td>3255</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">37.0</th>
+<td>2639</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13.0</th>
+<td>2557</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">34.0</th>
+<td>2510</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">39.0</th>
+<td>2501</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">42.0</th>
+<td>2192</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">25.0</th>
+<td>1960</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">26.0</th>
+<td>1759</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">4.0</th>
+<td>1565</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">53.0</th>
+<td>1560</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;Figure size 864x480 with 0 Axes&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="data_analysis_files/figure-html/cell-4-output-23.png" width="661" height="470" class="figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">### 5.7 Most Requested Skills</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">mentions</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">SKILLS_NAME</th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">[]</th>
+<td>508</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">[\n "User Experience (UX) Design",\n "Project Management",\n "Cyber Security",\n "Technical Support",\n "Data Analysis"\n]</th>
+<td>364</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">[\n "Pivot Tables And Charts",\n "Business Objectives",\n "Customer Service",\n "Presentations",\n "Forecasting",\n "Communication",\n "Empathy",\n "Continuous Improvement Process",\n "Planning",\n "Performance Management",\n "Utilization Management",\n "Data Management",\n "Data Architecture",\n "Finance",\n "Ability To Meet Deadlines",\n "Data Manipulation",\n "Patience",\n "Python (Programming Language)",\n "Time Management",\n "Leadership",\n "Statistics",\n "Call Center Experience",\n "Visual Basic For Applications",\n "Operations",\n "SQL (Programming Language)",\n "Excel Macros",\n "Service Level",\n "Workforce Management",\n "Business Administration",\n "Kronos (Timekeeping Software)",\n "Innovation",\n "Team Performance Management",\n "Descriptive Analytics",\n "Tableau (Business Intelligence Software)"\n]</th>
+<td>237</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">[\n "Cloud Computing",\n "Enterprise Resource Planning",\n "Workflow Management",\n "Gap Analysis",\n "Durable Goods",\n "Agile Methodology",\n "Planning",\n "Business Process Reengineering",\n "OneStream (CPM Software)",\n "Integrated Business Planning",\n "Analytical Skills",\n "Data Engineering",\n "Functional Specification",\n "Finance",\n "Standard Operating Procedure",\n "Systems Development Life Cycle",\n "Data Integration",\n "Information Systems",\n "Test Planning",\n "Supply Chain",\n "User Acceptance Testing (UAT)",\n "SAP Applications",\n "Business Requirements",\n "Organizational Strategy",\n "Operations",\n "Writing",\n "Business To Business",\n "Information Gathering",\n "Technical Documentation",\n "Project Planning",\n "Anaplan",\n "Software As A Service (SaaS)",\n "Software Development",\n "Business Planning",\n "Business Strategies",\n "Computer Science"\n]</th>
+<td>197</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">[\n "Data Analysis"\n]</th>
+<td>150</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">[\n "Customer Service",\n "Emergency Response",\n "Valid Driver's License",\n "Problem Solving"\n]</th>
+<td>108</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">[\n "Sales Process",\n "Statistics",\n "Presentations",\n "Marketing Analytics",\n "Planning",\n "Digital Marketing",\n "Microsoft PowerPoint",\n "Predictive Analytics",\n "Microsoft Outlook",\n "Google Analytics",\n "Python (Programming Language)",\n "Time Management",\n "Analytics",\n "Quality Control",\n "Mathematics",\n "Data Analysis",\n "Communication",\n "Marketing",\n "Project Management",\n "Writing",\n "Detail Oriented",\n "SQL (Programming Language)",\n "Microsoft Office",\n "Microsoft Excel",\n "Decision Making",\n "SAS (Software)",\n "Consulting",\n "Data Structures",\n "Economics",\n "Project Implementation",\n "R (Programming Language)"\n]</th>
+<td>96</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">[\n "Financial Statements",\n "Oracle Cloud",\n "Solution Design",\n "Cash Management",\n "Interface Design",\n "Requirements Analysis",\n "Communication",\n "Financial Management",\n "Functional Specification",\n "Software Documentation",\n "Accounts Payable",\n "Test Planning",\n "Accounts Receivable",\n "Financial Data",\n "Oracle Certification",\n "Business Requirements",\n "Detail Oriented",\n "Systems Integration",\n "Data Migration",\n "Fixed Asset",\n "Oracle Fusion Middleware",\n "Troubleshooting (Problem Solving)",\n "General Ledger",\n "Economics",\n "Business Administration",\n "Accounting",\n "Problem Solving"\n]</th>
+<td>94</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">[\n "Management",\n "Microsoft Access",\n "Data Reporting",\n "Data Warehousing",\n "Microsoft PowerPoint",\n "Finance",\n "Self Service Technologies",\n "Dashboard",\n "Primary Care",\n "Managed Care",\n "Mathematics",\n "Statistics",\n "Preventive Care",\n "Organizational Strategy",\n "SQL (Programming Language)",\n "Organizational Skills",\n "Microsoft Excel",\n "SAS (Software)",\n "Chronic Diseases",\n "Ad Hoc Reporting",\n "Microsoft Office",\n "Economics",\n "QlikView (Data Analytics Software)",\n "Tableau (Business Intelligence Software)",\n "Computer Science",\n "User Information"\n]</th>
+<td>90</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">[\n "MuleSoft",\n "Customer Service",\n "Databricks",\n "Code Review",\n "Information Technology",\n "Business Analytics",\n "Solution Architecture",\n "Microsoft Azure",\n "Microservices",\n "Cloud Computing Architecture",\n "Technology Roadmaps",\n "Data Science",\n "Data Warehousing",\n "Unstructured Data",\n "Big Data",\n "Finance",\n "PySpark",\n "OpenStack",\n "MLOps (Machine Learning Operations)",\n "Python (Programming Language)",\n "Machine Learning",\n "Machine Learning Model Training",\n "Leadership",\n "Information Systems",\n "Application Programming Interface (API)",\n "Azure Data Factory",\n "Supply Chain",\n "Enterprise Architecture",\n "IBM Cloud Computing",\n "Cloud Technologies",\n "SQL (Programming Language)",\n "Systems Architecture",\n "Troubleshooting (Problem Solving)",\n "Amazon Web Services",\n "Azure Functions",\n "Sales",\n "Cloud Governance",\n "Business Intelligence",\n "Advanced Analytics",\n "Data Analysis",\n "Architectural Design",\n "Computer Science",\n "R (Programming Language)"\n]</th>
+<td>88</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">[\n "Forecasting",\n "Oracle Cloud",\n "Account Reconciliation",\n "Corporate Reporting",\n "Agile Methodology",\n "Financial Close",\n "Planning",\n "Process Improvement",\n "Communication",\n "Microsoft Word",\n "Microsoft Office",\n "Oracle Hyperion Financial Management",\n "Software Deployment",\n "Microsoft PowerPoint",\n "Finance",\n "Consolidation",\n "Business Process",\n "Waterfall Methodology",\n "Microsoft Outlook",\n "Cloud Services",\n "Development Testing",\n "Innovation",\n "Presentations",\n "Calculations",\n "Budgeting",\n "Decision Making",\n "Sales Proposals",\n "Real Estate",\n "Financial Data",\n "Request For Proposal",\n "Business Requirements",\n "Prototyping",\n "Critical Thinking",\n "Project Management",\n "Operations",\n "Writing",\n "Oracle Hyperion",\n "Technology Solutions",\n "Financial Consolidations",\n "Microsoft Excel",\n "Data Transformation",\n "Technology Strategies",\n "NextGen Enterprise Practice Management",\n "Consulting",\n "Sales",\n "Quality Management",\n "Extract Transform Load (ETL)",\n "System Deployment",\n "Business Development",\n "Problem Solving",\n "Auditing"\n]</th>
+<td>86</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">[\n "SAP Applications"\n]</th>
+<td>86</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">[\n "Microsoft Access",\n "Process Improvement",\n "Security Clearance",\n "Communication",\n "Influencing Skills",\n "Informatics",\n "Algorithms",\n "Dashboard",\n "Leadership",\n "Data Analysis",\n "Forecasting",\n "Formal Learning",\n "Report Writing",\n "Organizational Skills",\n "Microsoft Excel",\n "Process Modeling",\n "Mathematics",\n "Project Stakeholders",\n "Data Visualization",\n "Business Strategies",\n "Business Process Modeling"\n]</th>
+<td>84</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">[\n "Oracle Cloud",\n "Digital Transformation",\n "Cash Management",\n "Appeals",\n "Cost Management",\n "Supply Chain Management",\n "Finance",\n "Ability To Meet Deadlines",\n "Scheduling",\n "Business Process",\n "Project Management",\n "Operations",\n "Strategic Prioritization",\n "Purchasing",\n "Procure-To-Pay (PTP)",\n "Scalability",\n "Project Accounting",\n "Peer-To-Peer"\n]</th>
+<td>69</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">[\n "Management",\n "Security Clearance",\n "Requirements Elicitation",\n "Interpersonal Communications",\n "DoDAF",\n "Top Secret-Sensitive Compartmented Information (TS/SCI Clearance)",\n "Strategic Roadmaps",\n "Governance",\n "Presentations",\n "Templates",\n "Strategic Planning",\n "The Open Group Architecture Framework (TOGAF)",\n "Microsoft Visio",\n "Writing",\n "Scalability"\n]</th>
+<td>67</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">[\n "Management",\n "Coaching",\n "Report Writing",\n "Data Compilation",\n "Software Technical Review",\n "Security Clearance",\n "Interpersonal Communications",\n "Finance",\n "Ability To Meet Deadlines",\n "Presentations",\n "Writing",\n "Teamwork",\n "Data Analysis",\n "Organizational Skills",\n "Data Integrity",\n "Microsoft Office",\n "Economics",\n "Program Management",\n "Computer Science"\n]</th>
+<td>66</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">[\n "Information Technology",\n "Coaching",\n "Project Documentation",\n "Technology Solutions",\n "Planning",\n "Innovation",\n "Cisco Identity Services Engine (ISE)",\n "Microsoft Azure",\n "Prioritization",\n "Selling Techniques",\n "Systems Development Life Cycle",\n "Communication",\n "Coordinating",\n "Sales Support",\n "Influencing Skills",\n "Market Trend",\n "Customer Service",\n "Service Development",\n "Mentorship",\n "Leadership",\n "Templates",\n "Fortinet",\n "Product Management",\n "Test Planning",\n "Wireless Security",\n "Network Security",\n "Billing",\n "Request For Proposal",\n "Strategic Planning",\n "Security Requirements Analysis",\n "IT Security Architecture",\n "Technical Training",\n "Detail Oriented",\n "Product Definition",\n "Cyber Security",\n "Project Implementation",\n "Amazon Web Services",\n "Project Planning",\n "Consulting",\n "Project Sponsorship",\n "Sales",\n "Pre-Sales Engineering",\n "Local Area Networks",\n "Test Automation",\n "Wide Area Networks",\n "Organizational Effectiveness",\n "Sales Presentations",\n "New Product Development",\n "Product Demonstration"\n]</th>
+<td>64</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">[\n "Power BI",\n "Object-Oriented Programming (OOP)",\n "Apache Hadoop",\n "Server-Side",\n "Continuous Improvement Process",\n "Key Performance Indicators (KPIs)",\n "Planning",\n "Cloud Services",\n "Data Engineering",\n "Big Data",\n "A/B Testing",\n "Algorithms",\n "Communication",\n "New Product Development",\n "Innovation",\n "Python (Programming Language)",\n "Ad Hoc Analysis",\n "Dashboard",\n "Brainstorming",\n "Analytics",\n "Decision Making",\n "Marketing",\n "Critical Thinking",\n "Business Intelligence",\n "Data Structures",\n "SQL (Programming Language)",\n "Scalability",\n "Microsoft PowerPoint",\n "Product Roadmaps",\n "Data Modeling",\n "Verbal Communication Skills",\n "Advanced Analytics",\n "MapReduce",\n "Apache Hive",\n "Tableau (Business Intelligence Software)"\n]</th>
+<td>64</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">[\n "Management",\n "Business Communication",\n "Coaching",\n "Order To Cash Process",\n "SAP Sales And Distribution",\n "Project Planning",\n "Change Management Planning",\n "Coordinating",\n "Finance",\n "Influencing Skills",\n "Business Process",\n "Invoicing",\n "Mentorship",\n "Thought Leadership",\n "Certified Power Quality Professional",\n "Marketing Materials",\n "Collections",\n "Supply Chain",\n "Ethical Standards And Conduct",\n "Billing",\n "Communication",\n "SAP Applications",\n "Marketing",\n "Workflow Management",\n "Human Capital",\n "Project Scoping",\n "Technology Strategies",\n "Order Delivery",\n "Project Implementation",\n "Consulting",\n "Sales",\n "Innovation",\n "Writing",\n "Value Propositions"\n]</th>
+<td>61</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">[\n "Information Technology",\n "Management",\n "Electronic Engineering",\n "Access Network",\n "Security Clearance",\n "Systems Engineering",\n "Technical Leadership",\n "Architectural Design",\n "NIST Cybersecurity Framework (CSF)",\n "Security Requirements Analysis",\n "GIAC Security Essentials Certification (GSEC)",\n "Operations",\n "FedRAMP",\n "Risk Management Framework",\n "Certified Information Systems Security Professional",\n "Cyber Security",\n "GIAC Certifications",\n "Threat Management",\n "Computer Engineering",\n "Okta",\n "Vulnerability",\n "Computer Science",\n "Federal Information Security Management Act"\n]</th>
+<td>60</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<pre><code>&lt;Figure size 864x576 with 0 Axes&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="data_analysis_files/figure-html/cell-4-output-27.png" width="1050" height="928" class="figure-img"></p>
+</figure>
 </div>
 </div>
 </div>

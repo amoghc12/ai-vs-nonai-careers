@@ -123,3 +123,172 @@ display(summary_table)
 display(pd.DataFrame({"📌 Step 6: Top 12 most-missing columns (after cleaning)": []}))
 display(after_top_missing)
 ```
+
+
+## Identifying and removing redundant columns, duplicates, and extreme values
+
+```{python}
+#| echo: false
+import re, numpy as np, pandas as pd
+from IPython.display import display
+
+# Ensure dataset is loaded
+try:
+    df
+except NameError:
+    df = pd.read_csv("Data/lightcast_job_postings.csv", low_memory=False)
+
+# ============================
+# Step 7: Remove Redundant Columns
+# ============================
+
+rows_before, cols_before = df.shape
+
+explicit_drops = [
+    "ID","URL","ACTIVE_URLS","DUPLICATES","LAST_UPDATED_TIMESTAMP",
+    "TITLE_RAW","COMPANY_RAW","MODELED_EXPIRED","MODELED_DURATION",
+    "NAICS2","NAICS2_NAME","NAICS3","NAICS3_NAME","NAICS4","NAICS4_NAME","NAICS5","NAICS5_NAME",
+    "COUNTY_OUTGOING","COUNTY_NAME_OUTGOING","COUNTY_INCOMING","COUNTY_NAME_INCOMING",
+    "MSA_OUTGOING","MSA_NAME_OUTGOING","MSA_INCOMING","MSA_NAME_INCOMING",
+    "SOURCE_TYPES","SOURCES","TITLE_CLEAN"
+]
+
+flow_drop = [c for c in df.columns if re.search(r"(OUTGOING|INCOMING)$", c, flags=re.I)]
+
+canon_keep = set()
+for col in ["TITLE","COMPANY","LOCATION","POSTED","REMOTE_TYPE_NAME","EMPLOYMENT_TYPE_NAME",
+            "NAICS6_NAME","CITY_NAME","COUNTY_NAME","MSA_NAME","STATE","STATE_NAME"]:
+    if col in df.columns:
+        canon_keep.add(col)
+
+name_dupes = []
+for base, alt in [("TITLE","TITLE_NAME"), ("COMPANY","COMPANY_NAME")]:
+    if base in df.columns and alt in df.columns and alt not in canon_keep:
+        name_dupes.append(alt)
+
+to_drop = sorted(set([c for c in explicit_drops if c in df.columns] + flow_drop + name_dupes))
+df.drop(columns=to_drop, inplace=True, errors="ignore")
+
+rows_after_cols, cols_after_cols = df.shape
+display(pd.DataFrame({"📌 Step 7: Redundant columns removed (preview)": []}))
+display(pd.DataFrame({"Dropped Columns": to_drop[:40]}))
+display(pd.DataFrame({
+    "metric": ["rows","columns"],
+    "before": [rows_before, cols_before],
+    "after":  [rows_after_cols, cols_after_cols]
+}))
+
+# ============================
+# Step 8: Remove Duplicates
+# ============================
+
+rows_before_dedup = len(df)
+dedupe_key = [c for c in ["TITLE","COMPANY","LOCATION","POSTED"] if c in df.columns]
+if not dedupe_key:
+    dedupe_key = [c for c in ["TITLE","COMPANY","CITY_NAME","STATE","POSTED"] if c in df.columns]
+
+df = df.drop_duplicates(subset=dedupe_key, keep="first")
+rows_after_dedup = len(df)
+
+display(pd.DataFrame({"📌 Step 8: Deduplication summary": []}))
+display(pd.DataFrame({
+    "dedupe_key_used": [", ".join(dedupe_key) if dedupe_key else "(none)"],
+    "rows_removed": [rows_before_dedup - rows_after_dedup],
+    "rows_after": [rows_after_dedup]
+}))
+
+
+#| echo: false
+import re, numpy as np, pandas as pd
+from IPython.display import display
+
+# ============================
+# Step 9: Remove Extreme Values (Outliers) — Robust detection
+# ============================
+
+# Ensure salary-related columns are still in the dataset
+df.columns = [c.strip().upper() for c in df.columns]
+
+# Reload original salary info if needed
+if not any(c in df.columns for c in ["SALARY","SALARY_FROM","SALARY_TO","ORIGINAL_PAY_PERIOD"]):
+    try:
+        df_raw = pd.read_csv("Data/lightcast_job_postings.csv", low_memory=False)
+        df_raw.columns = [c.strip().upper() for c in df_raw.columns]
+        for c in ["SALARY","SALARY_FROM","SALARY_TO","ORIGINAL_PAY_PERIOD"]:
+            if c in df_raw.columns and c not in df.columns:
+                df[c] = df_raw[c]
+    except Exception as e:
+        display(pd.DataFrame({"⚠️ Warning": [f"Could not reload salary columns: {e}"]}))
+
+# Detect any salary-related columns again
+salary_cols = [c for c in df.columns if re.search(r"SALARY|PAY|WAGE", c, flags=re.I)]
+
+if not salary_cols:
+    display(pd.DataFrame({"⚠️ Warning": ["No salary-related columns found. Skipping Step 9."]}))
+else:
+    # 1️⃣ Coerce salary values to numeric
+    for col in ["SALARY", "SALARY_FROM", "SALARY_TO"]:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    # 2️⃣ Compute midpoint
+    if {"SALARY_FROM","SALARY_TO"}.issubset(df.columns):
+        df["SALARY_MID"] = df[["SALARY_FROM","SALARY_TO"]].mean(axis=1)
+    elif "SALARY" in df.columns:
+        df["SALARY_MID"] = df["SALARY"]
+    else:
+        df["SALARY_MID"] = np.nan
+
+    # 3️⃣ Convert to annual
+    def to_annual(v, period):
+        if pd.isna(v): 
+            return np.nan
+        p = str(period).lower() if pd.notna(period) else "year"
+        factor = {"hour":2080, "day":260, "week":52, "month":12, "year":1}.get(p, 1)
+        return float(v) * factor
+
+    if "ORIGINAL_PAY_PERIOD" in df.columns:
+        df["ANNUAL_SALARY"] = [to_annual(v, p) for v, p in zip(df["SALARY_MID"], df["ORIGINAL_PAY_PERIOD"])]
+    else:
+        df["ANNUAL_SALARY"] = df["SALARY_MID"]
+
+    df.loc[df["ANNUAL_SALARY"] <= 0, "ANNUAL_SALARY"] = np.nan
+
+    # 4️⃣ IQR outlier handling
+    s = df["ANNUAL_SALARY"].dropna()
+    low = high = np.nan
+    removed_outliers = 0
+    if len(s) > 0:
+        q1, q3 = s.quantile([0.25, 0.75])
+        iqr = q3 - q1
+        low, high = q1 - 1.5 * iqr, q3 + 1.5 * iqr
+        mask = (df["ANNUAL_SALARY"] < low) | (df["ANNUAL_SALARY"] > high)
+        removed_outliers = int(mask.sum())
+        df.loc[mask, "ANNUAL_SALARY"] = np.nan
+
+    # 5️⃣ Display summary
+    display(pd.DataFrame({"📌 Step 9: Salary Outlier Summary (IQR)": []}))
+    display(pd.DataFrame({
+        "salary_column_used": ["ANNUAL_SALARY"],
+        "iqr_low_threshold": [low],
+        "iqr_high_threshold": [high],
+        "values_set_to_NaN": [removed_outliers],
+        "remaining_with_salary": [int(df["ANNUAL_SALARY"].notna().sum())]
+    }))
+
+
+# ============================
+# Step 10: Save Cleaned Dataset
+# ============================
+
+out_path = "Data/lightcast_clean_final.csv"
+df.to_csv(out_path, index=False)
+display(pd.DataFrame({"📌 Step 10: Cleaned dataset saved": [out_path]}))
+
+```
+
+# Exploratory Data Analysis (EDA) with visualizations
+
+```{python}
+
+```
