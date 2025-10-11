@@ -5,13 +5,20 @@ website:
   title: "AI vs. Non-AI Careers"
   navbar:
     left:
-      - href: index.html
+      - href: index.qmd        
         text: "Home"
       - href: data_analysis.qmd
         text: "Data Analysis"
+
+execute:
+  echo: true                   
 
 format:
   html:
     theme: cosmo
     toc: true
     css: styles.css
+    code-fold: true            
+    code-summary: "Show code"  
+    code-tools: true           
+    code-copy: true            

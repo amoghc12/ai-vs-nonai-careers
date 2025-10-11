@@ -24,6 +24,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 /* CSS for citations */
 div.csl-bib-body { }
 div.csl-entry {
@@ -63,7 +98,7 @@ div.csl-indent {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-dc55a5b9e770e841cd82e46aadbfb9b0.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-e31584831b205ffbb2d98406f31c2a5b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-9859d952baf36b9a7db628bbb9f3169e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -116,7 +151,7 @@ div.csl-indent {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./index.html"> 
+    <a class="nav-link" href="./index.qmd"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
@@ -151,7 +186,7 @@ div.csl-indent {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">AI vs.&nbsp;Non-AI Careers: Job Market Prospects in 2024</h1>
+<div class="quarto-title-block"><div><h1 class="title">AI vs.&nbsp;Non-AI Careers: Job Market Prospects in 2024</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
 </div>
 
 
@@ -216,6 +251,8 @@ div.csl-indent {
 <h1>Exploratory Data Analysis (EDA) with visualizations.</h1>
 <p>The Lightcast CSV file has a tremendous amount of data that would not make much sense to sort through manually. As a result, we have developed multiple tables that show a sample of the data from the Lightcast CSV. We show a sample of the first five rows which are raw and uncleaned. The second table is essentially a visualizer for the user showing how many rows, columns, and total missing cells there are in the file. The third table serves as a hub of information showing the percentage of data missing from the top 12 columns with the most missing data along with their types. The fourth table shows the data from the first table, but in a much cleaner fashion with all the relevant columns. The fifth tables is a comparative visual of how much data we were able to clean and filter throughout the entire process. As you can see, there are significantly less rows, columns, and total missing cells than before the cleanup. In the sixth and final table, all of the columns that had a certain percentage of missing data now have a missing data percentage of zero. This further shows that our process of cleaning up and filtering the data to pinpoint the exact information needed was successful.</p>
 
+
+<!-- -->
 
 
 </section>
@@ -310,6 +347,57 @@ div.csl-indent {
         container: window.document.getElementById('quarto-embedded-source-code-modal')
       });
       clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
@@ -639,7 +727,53 @@ div.csl-indent {
       }
     }
   });
-  </script>
+  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "AI vs. Non-AI Careers: Job Market Prospects in 2024"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">  - name: "Group 1"</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">    affiliation: "Boston University"</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">  - name: "Amogh Challa"</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">  - name: "Othmane Elouardi"</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> "September 25, 2025"</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="an">page-layout:</span><span class="co"> article</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="an">toc:</span><span class="co"> true</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="an">toc-location:</span><span class="co"> right</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">    theme: cosmo</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">    css: styles.css</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="an">bibliography:</span><span class="co"> references.bib</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="an">csl:</span><span class="co"> csl/econometrica.csl</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="fu"># Introduction</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>As of 2024, the global job market stands at a crucial crossroads, significantly shaped by the ongoing evolution of artificial intelligence (AI). This technology is transforming various sectors, including healthcare, finance, retail, and education. The shifts aren’t just about the types of jobs available; they’re also changing the way we work. Current studies reveal that while AI drives job displacement in routine and clerical roles, it simultaneously creates new opportunities that focus on technology, data, and human interaction (@George_2024; @Huang). Tools like ChatGPT have added complexity, with predictions suggesting that over 30% of jobs could experience significant changes (@Zarifhonarvar). New roles, such as AI Solutions Architect and AI Bias Auditor, are emerging, highlighting the need for expertise in integrating AI into our workflows (@George_George_2025). It’s clear that AI is not just about taking jobs away; it’s also sparking transformation, urging us to adapt, keep learning, and embrace innovation as we navigate the evolving career landscape.</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>As AI has gone from murmurs in the background to its sudden immediate dependencies for many many things in today’s age, questions, typically from fear, arise in the eye of the public. Will AI get rid of many jobs, crippling the job market? How is my job security in my current role going to change over the next couple of years? While AI brings humanity many benefits, it also has a very large grey area that could shift society in a negative direction if not managed properly. One thing that always pushes people forward in times of immense and sudden change, such as now, is to adapt. @Rion states that “...there is a reduced risk of displacement occurring for high-skilled workers with AI encompassing elements of enhancement, whereas low-skilled workers are most at risk of displacement” (p. 2). The big hope with AI is that job displacement could potentially evolve into certain jobs and industries being repurposed for AI-centric functionalities. The change that AI has brought to the world and will continuously do, and in even bigger waves, is quickly making businesses adapt to the immediate benefits that it brings, but this is also a signal that individuals must pick up these skills to have a fighting chance in a job market that is turning into something entirely different. </span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="fu"># Research Rationale</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>The increasing involvement of AI in various industries necessitates a deeper understanding of its impact on employment. Many conversations often frame AI as a threat to job security, but the reality is more nuanced. Research indicates that AI often triggers changes in work dynamics instead of leading to outright job loss. While there is no denial that some occupations in a number of sectors will be significantly altered if not replaced, as @George_2024 points out, “AI is expected to result in more job movement than job elimination by boosting productivity, driving economic growth, altering job structures, and enabling sectors to transition” (p. 17). Recognizing these trends is crucial for both workers and policymakers as they work on strategies to ensure smooth transitions and equitable opportunities.</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>Additionally, the speed of this transformation is unlike anything we’ve seen before. Historical technological shifts unfolded over decades, while AI adoption is rapidly changing industries in just a few years. Today, workers find themselves in a labor market where traditional career paths exist alongside new, AI-driven opportunities. @Zarifhonarvar emphasizes this urgency by stating, “32.8% of occupations could be fully impacted by ChatGPT, while 36.5% might experience a partial impact and 30.7% are likely to remain unaffected” (p. 100). This highlights the extensive and uneven impacts of AI disruption, emphasizing the need to examine its implications for job security, industry demand, and the emergence of new career fields.</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>The function of this study is to assess the current state of the impact of AI on society, as of 2024, and try to get a better understanding of its pros and cons on the job market. According to @Shen_1970, “AI technology is correlated with increasing the total number of jobs on the market. Thanks to more efficient labor productivity, capital deepening, and specialized division of labor from integrating digital technology, AI offsets the negative effects of robots on employment and significantly increases manufacturing enterprises’ market size and production scale, with a significant job creation effect” (p. 1). With the increased rate of integration of AI in most processes nowadays, there is actually a shift in the market and less of a depletion of jobs/job growth. Low-skilled workers have the biggest risk of being replaced by AI simply because the most mundane, repeatable jobs are the easiest for machines to replace. Developing certain skills relating to AI will prove very useful in this current job market because it is still such a fresh concept to the general population.</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="fu"># Literature Review</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>Recent research suggests that AI is more likely to lead to job shifting rather than large-scale, permanent job losses. While it's true that some sectors may experience job displacement, @George_2024 argues that the productivity gains associated with AI adoption consistently generate new employment opportunities. He explains that “displaced workers can transfer into new occupational jobs with adequate skilling and transition support rather than facing long periods of unemployment” (p. 17). This theme aligns with broader economic evidence showing that technological advancements typically create more jobs than they eliminate, even if the transition process can be rocky.</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>New job categories are emerging that didn’t exist just a decade ago. @George_George_2025 highlight roles such as AI Solutions Architect and AI Bias Auditor, stating they are “not optional additions but essential components of sustainable AI strategy” (p. 58). @Huang also notes that AI adoption is reshaping labor and capital in various industries, creating fresh opportunities while widening existing skill gaps. These trends underscore that AI isn’t merely automating routine tasks; it’s also driving innovation in job design, making continuous adaptation and skill development essential for today’s workforce.</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="fu"># Exploratory Data Analysis (EDA) with visualizations.</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>The Lightcast CSV file has a tremendous amount of data that would not make much sense to sort through manually. As a result, we have developed multiple tables that show a sample of the data from the Lightcast CSV. We show a sample of the first five rows which are raw and uncleaned. The second table is essentially a visualizer for the user showing how many rows, columns, and total missing cells there are in the file. The third table serves as a hub of information showing the percentage of data missing from the top 12 columns with the most missing data along with their types. The fourth table shows the data from the first table, but in a much cleaner fashion with all the relevant columns. The fifth tables is a comparative visual of how much data we were able to clean and filter throughout the entire process. As you can see, there are significantly less rows, columns, and total missing cells than before the cleanup. In the sixth and final table, all of the columns that had a certain percentage of missing data now have a missing data percentage of zero. This further shows that our process of cleaning up and filtering the data to pinpoint the exact information needed was successful.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
 </div> <!-- /content -->
 
 
