@@ -290,5 +290,195 @@ display(pd.DataFrame({"📌 Step 10: Cleaned dataset saved": [out_path]}))
 # Exploratory Data Analysis (EDA) with visualizations
 
 ```{python}
+#| echo: false
+import re, numpy as np, pandas as pd, matplotlib.pyplot as plt
+from matplotlib.ticker import FuncFormatter
+from IPython.display import display, Markdown
+
+# Reuse cleaned df if it exists; else load from disk
+try:
+    df
+except NameError:
+    df = pd.read_csv("Data/lightcast_clean_final.csv", low_memory=False)
+
+# Normalize names
+df.columns = [c.strip().upper() for c in df.columns]
+
+# Helpers -------------------------------------------------------------
+def H(txt):  # proper headings (no tables / dashes)
+    display(Markdown(f"### {txt}"))
+
+def note(msg):
+    display(Markdown(f"*ℹ️ {msg}*"))
+
+def comma_fmt(ax):
+    ax.xaxis.set_major_formatter(FuncFormatter(lambda x, p: f"{int(x):,}"))
+
+# 5.1 Job Postings by Industry ---------------------------------------
+H("5.1 Job Postings by Industry")
+
+naics_cols = [c for c in ["NAICS_2022_6_NAME","NAICS6_NAME","NAICS_NAME","NAICS4_NAME"] if c in df.columns]
+if naics_cols:
+    ind_col = naics_cols[0]
+    top_ind = (df[ind_col].dropna().astype(str).str.strip()
+               .replace("", np.nan).dropna()
+               .value_counts().head(15).rename("postings").to_frame())
+    display(top_ind)
+
+    fig, ax = plt.subplots(figsize=(9,5))
+    top_ind.iloc[::-1].plot(kind="barh", legend=False, ax=ax)
+    comma_fmt(ax)
+    ax.set_title("Top 15 Industries by Job Postings", pad=10)
+    ax.set_xlabel("Number of Postings")
+    ax.set_ylabel(ind_col)
+    plt.tight_layout()
+    plt.show()
+else:
+    note("No NAICS name columns found (e.g., **NAICS_2022_6_NAME**). Skipping industry plots.")
+
+# 5.2 Salary Distribution by Industry --------------------------------
+H("5.2 Salary Distribution by Industry")
+
+if ("ANNUAL_SALARY" in df.columns) and naics_cols:
+    ind_col = naics_cols[0]
+    dtemp = df[[ind_col,"ANNUAL_SALARY"]].dropna()
+    top8 = dtemp[ind_col].value_counts().head(8).index
+    dbox = dtemp[dtemp[ind_col].isin(top8)]
+    if len(dbox) > 0:
+        fig, ax = plt.subplots(figsize=(10,5))
+        dbox.boxplot(by=ind_col, column="ANNUAL_SALARY", grid=False, vert=True, ax=ax)
+        plt.suptitle("")  # remove default pandas title
+        ax.set_title("Annual Salary by Industry (Top 8 by postings)", pad=10)
+        ax.set_ylabel("Annual Salary")
+        ax.tick_params(axis="x", rotation=30)
+        plt.tight_layout()
+        plt.show()
+
+        stats = (dbox.groupby(ind_col)["ANNUAL_SALARY"]
+                     .agg(n="count", median="median",
+                          p25=lambda s: s.quantile(0.25), p75=lambda s: s.quantile(0.75))
+                     .sort_values("n", ascending=False))
+        display(stats)
+    else:
+        note("Not enough salary data by industry to plot.")
+else:
+    note("**ANNUAL_SALARY** or a NAICS name column is missing. Skipping salary-by-industry.")
+
+# 5.3 Remote vs. On-Site Jobs ----------------------------------------
+H("5.3 Remote vs. On-Site Jobs")
+
+rt_col = next((c for c in ["REMOTE_TYPE_NAME","REMOTE_TYPE"] if c in df.columns), None)
+if rt_col:
+    counts = df[rt_col].fillna("Unknown").astype(str).str.strip().value_counts().rename("postings").to_frame()
+    display(counts)
+
+    fig, ax = plt.subplots(figsize=(5.5,5.5))
+    ax.pie(counts["postings"], labels=counts.index, autopct="%1.0f%%", startangle=90)
+    ax.set_title("Remote vs. On-Site Job Postings", pad=10)
+    ax.axis("equal")
+    plt.tight_layout()
+    plt.show()
+else:
+    note("**REMOTE_TYPE_NAME** not found. Skipping remote vs. on-site chart.")
+
+# 5.4 Job Postings Over Time -----------------------------------------
+H("5.4 Job Postings Over Time")
+
+date_col = next((c for c in ["POSTED","DATE","JOB_POST_DATE","LAST_UPDATED_DATE"] if c in df.columns), None)
+if date_col:
+    ts = df[[date_col]].copy()
+    ts[date_col] = pd.to_datetime(ts[date_col], errors="coerce")
+    ts = ts.dropna()
+    if len(ts) > 0:
+        monthly = ts.set_index(date_col).resample("MS").size().rename("postings")
+        display(monthly.tail(12).to_frame())
+
+        fig, ax = plt.subplots(figsize=(9,4))
+        monthly.plot(ax=ax, legend=False)
+        ax.set_title("Job Postings Trend (Monthly)", pad=10)
+        ax.set_xlabel("Month"); ax.set_ylabel("Number of Postings")
+        comma_fmt(ax)
+        plt.tight_layout()
+        plt.show()
+    else:
+        note("All POSTED dates are invalid or missing after parsing.")
+else:
+    note("No date column (e.g., **POSTED**) is available. Skipping time series.")
+
+# 5.5 Top Companies ---------------------------------------------------
+H("5.5 Top Companies")
+
+# Prefer COMPANY_NAME if available (COMPANY can be numeric in Lightcast)
+comp_col = next((c for c in ["COMPANY_NAME","COMPANY"] if c in df.columns), None)
+if comp_col:
+    top_comp = (df[comp_col].dropna().astype(str).str.strip()
+                .replace("", np.nan).dropna()
+                .value_counts().head(15).rename("postings").to_frame())
+    display(top_comp)
+
+    fig, ax = plt.subplots(figsize=(9,5))
+    top_comp.iloc[::-1].plot(kind="barh", legend=False, ax=ax)
+    comma_fmt(ax)
+    ax.set_title("Top 15 Companies by Job Postings", pad=10)
+    ax.set_xlabel("Number of Postings")
+    ax.set_ylabel(comp_col)
+    plt.tight_layout()
+    plt.show()
+else:
+    note("Company column not found. Skipping top companies.")
+
+# 5.6 Job Postings by State ------------------------------------------
+H("5.6 Job Postings by State")
+
+# Prefer STATE_NAME over numeric STATE codes
+state_col = next((c for c in ["STATE_NAME","STATE"] if c in df.columns), None)
+if state_col:
+    top_states = (df[state_col].dropna().astype(str).str.strip()
+                  .replace("", np.nan).dropna()
+                  .value_counts().head(15).rename("postings").to_frame())
+    display(top_states)
+
+    fig, ax = plt.subplots(figsize=(9,5))
+    top_states.iloc[::-1].plot(kind="barh", legend=False, ax=ax)
+    comma_fmt(ax)
+    ax.set_title("Top 15 States by Job Postings", pad=10)
+    ax.set_xlabel("Number of Postings")
+    ax.set_ylabel(state_col)
+    plt.tight_layout()
+    plt.show()
+else:
+    note("Neither **STATE_NAME** nor **STATE** is available. Skipping geography plot.")
+
+# 5.7 Skills in Demand -----------------------------------------------
+H("5.7 Most Requested Skills")
+
+skills_col = next((c for c in ["SKILLS_NAME","SPECIALIZED_SKILLS_NAME","COMMON_SKILLS_NAME","SOFTWARE_SKILLS_NAME"]
+                   if c in df.columns), None)
+if skills_col:
+    s = df[skills_col].dropna().astype(str)
+
+    # Handle JSON-like arrays: remove [ ] and quotes, then split on commas or |
+    s = (s.str.replace(r"\[|\]", "", regex=True)
+          .str.replace('"', "", regex=False)
+          .str.replace(r"\\n", " ", regex=True)
+          .str.split(r"\s*,\s*|\|")
+          .explode()
+          .str.strip()
+          .replace("", np.nan)
+          .dropna())
+
+    top_skills = s.value_counts().head(20).rename("mentions").to_frame()
+    display(top_skills)
+
+    fig, ax = plt.subplots(figsize=(9,6))
+    top_skills.iloc[::-1].plot(kind="barh", legend=False, ax=ax)
+    comma_fmt(ax)
+    ax.set_title("Top 20 Requested Skills", pad=10)
+    ax.set_xlabel("Mentions in Postings")
+    ax.set_ylabel("Skill")
+    plt.tight_layout()
+    plt.show()
+else:
+    note("No skills columns found (e.g., **SKILLS_NAME**). Skipping skills analysis.")
 
 ```
