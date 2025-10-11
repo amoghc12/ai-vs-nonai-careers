@@ -309,8 +309,42 @@ def H(txt):  # proper headings (no tables/dashes)
 def note(msg):
     display(Markdown(f"*ℹ️ {msg}*"))
 
-# 5.1 Job Postings by Industry ---------------------------------------
-H("5.1 Job Postings by Industry")
+# 3.1 Missing Values Heatmap ---------------------------------------
+#| echo: false
+import numpy as np, pandas as pd, plotly.express as px
+from IPython.display import display, Markdown
+
+try:
+    df
+except NameError:
+    df = pd.read_csv("Data/lightcast_clean_final.csv", low_memory=False)
+
+df.columns = [c.strip().upper() for c in df.columns]
+
+display(Markdown("### 3.1 Missing Values Heatmap"))
+
+# Top 30 columns by % missing (keeps heatmap readable)
+top_cols = (df.isna().mean().sort_values(ascending=False).head(30).index.tolist())
+if not top_cols:
+    display(Markdown("*ℹ️ No columns with missing values to visualize.*"))
+else:
+    sample = df[top_cols].isna().astype(int)
+    if len(sample) > 1000:
+        sample = sample.sample(1000, random_state=0)
+
+    fig = px.imshow(
+        sample.T,
+        color_continuous_scale=["#2ca02c", "#d62728"],  # Present → Missing
+        aspect="auto",
+        labels=dict(x="Row (sampled)", y="Columns", color="Missing"),
+        title="Missing Values Heatmap (Top 30 Columns, up to 1,000 rows)"
+    )
+    fig.update_coloraxes(cmin=0, cmax=1, colorbar=dict(tickvals=[0,1], ticktext=["Present","Missing"]))
+    fig.update_layout(title_x=0.02, margin=dict(l=10, r=10, t=40, b=10))
+    fig.show()
+
+# 3.2 Job Postings by Industry ---------------------------------------
+H("3.2 Job Postings by Industry")
 
 naics_cols = [c for c in ["NAICS_2022_6_NAME","NAICS6_NAME","NAICS_NAME","NAICS4_NAME"] if c in df.columns]
 if naics_cols:
@@ -338,8 +372,8 @@ if naics_cols:
 else:
     note("No NAICS name columns found (e.g., **NAICS_2022_6_NAME**). Skipping industry plots.")
 
-# 5.2 Salary Distribution by Industry --------------------------------
-H("5.2 Salary Distribution by Industry")
+# 3.3 Salary Distribution by Industry --------------------------------
+H("3.3 Salary Distribution by Industry")
 
 if ("ANNUAL_SALARY" in df.columns) and naics_cols:
     ind_col = naics_cols[0]
@@ -369,8 +403,8 @@ if ("ANNUAL_SALARY" in df.columns) and naics_cols:
 else:
     note("**ANNUAL_SALARY** or a NAICS name column is missing. Skipping salary-by-industry.")
 
-# 5.3 Remote vs. On-Site Jobs ----------------------------------------
-H("5.3 Remote vs. On-Site Jobs")
+# 3.4 Remote vs. On-Site Jobs ----------------------------------------
+H("3.4 Remote vs. On-Site Jobs")
 
 rt_col = next((c for c in ["REMOTE_TYPE_NAME","REMOTE_TYPE"] if c in df.columns), None)
 if rt_col:
@@ -392,8 +426,8 @@ if rt_col:
 else:
     note("**REMOTE_TYPE_NAME** not found. Skipping remote vs. on-site chart.")
 
-# 5.4 Job Postings Over Time (interactive) ----------------------------
-H("5.4 Job Postings Over Time")
+# 3.5 Job Postings Over Time (interactive) ----------------------------
+H("3.5 Job Postings Over Time")
 
 date_col = next((c for c in ["POSTED","DATE","JOB_POST_DATE","LAST_UPDATED_DATE"] if c in df.columns), None)
 if date_col:
@@ -417,8 +451,8 @@ else:
     note("No date column (e.g., **POSTED**) available. Skipping time series.")
 
 
-# 5.5 Top Companies ---------------------------------------------------
-H("5.5 Top Companies")
+# 3.6 Top Companies ---------------------------------------------------
+H("3.6 Top Companies")
 
 comp_col = next((c for c in ["COMPANY_NAME","COMPANY"] if c in df.columns), None)
 if comp_col:
@@ -443,8 +477,8 @@ if comp_col:
 else:
     note("Company column not found. Skipping top companies.")
 
-# 5.6 Job Postings by State ------------------------------------------
-H("5.6 Job Postings by State")
+# 3.7 Job Postings by State ------------------------------------------
+H("3.7 Job Postings by State")
 
 state_col = next((c for c in ["STATE_NAME","STATE"] if c in df.columns), None)
 if state_col:
@@ -469,8 +503,8 @@ if state_col:
 else:
     note("Neither **STATE_NAME** nor **STATE** is available. Skipping geography plot.")
 
-# 5.7 Most Requested Skills ------------------------------------------
-H("5.7 Most Requested Skills")
+# 3.8 Most Requested Skills ------------------------------------------
+H("3.8 Most Requested Skills")
 
 skills_col = next((c for c in ["SKILLS_NAME","SPECIALIZED_SKILLS_NAME","COMMON_SKILLS_NAME","SOFTWARE_SKILLS_NAME"]
                    if c in df.columns), None)
