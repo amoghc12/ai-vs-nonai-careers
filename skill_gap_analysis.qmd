@@ -27,7 +27,13 @@ csl: csl/econometrica.csl
 ## Team-based skill dataframe
 
 ```{python}
+#| echo: false
+from theme.plotly_theme import apply_plotly_theme
+apply_plotly_theme()
+```
+```{python}
 #| echo: true
+
 # Team Skill Matrix (UPDATED to your 10 skills) + Interactive Visuals
 import pandas as pd, numpy as np
 import plotly.express as px, plotly.graph_objects as go
@@ -371,8 +377,8 @@ Use short, portfolio-ready artifacts (dashboards, case studies, SQL challenge wr
 # Improvement plan Proposition
 
 ```{python}
-
 #| echo: true
+
 # Improvement plan section: gaps, ownership, roadmap, actions, visuals
 import pandas as pd
 import numpy as np
