@@ -1,0 +1,141 @@
+/* 
+   GLOBAL TYPOGRAPHY & BASE
+   =========================== */
+body {
+  font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif !important;
+  background-color: #f9fafb !important;
+  color: #222 !important;
+  line-height: 1.7 !important;
+  font-size: 1.05rem !important;
+  margin: 0;
+  padding: 0;
+}
+
+
+/* 
+   MAIN CONTENT LAYOUT
+   =========================== */
+main.content {
+  max-width: 1000px;          
+  margin: 2rem auto;         
+  padding: 0 1rem;         
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  border-radius: 4px;
+}
+
+
+/* --- never indent anything in the title header/meta --- */
+#title-block-header p,
+.quarto-title-block p,
+.quarto-title-meta p {
+  text-indent: 0 !important;
+}
+
+/* --- indent only paragraphs in the article body sections --- */
+#quarto-document-content section p,
+main.content section p {
+  text-indent: 2em !important;   
+}
+
+
+/* 
+   TITLES
+   =========================== */
+.quarto-title h1.title,
+.quarto-title-block .title {
+  font-size: 1.7rem !important;
+  font-weight: 700 !important;
+  color: #112288 !important;  
+  border-bottom: 2px solid #112288;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* 
+   METADATA (authors, date)
+   =========================== */
+.quarto-title-meta {
+  display: flex !important;
+  justify-content: space-between !important;
+  font-size: 0.9rem !important;
+  color: #444 !important;
+  margin-bottom: 2rem;
+}
+
+.quarto-title-meta-label {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: #777;
+}
+
+/* 
+   TOC (On this page)
+   =========================== */
+#quarto-sidebar-secondary,
+nav[role="doc-toc"] {
+  position: fixed !important;
+  top: 100px;                 
+  right: 50px;                
+  width: 220px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  padding: 1rem;
+  font-size: 0.9rem;
+}
+
+#quarto-sidebar-secondary h2,
+nav[role="doc-toc"] h2 {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #112288;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+#quarto-sidebar-secondary ul,
+nav[role="doc-toc"] ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+#quarto-sidebar-secondary li,
+nav[role="doc-toc"] li {
+  margin-bottom: 0.4rem;
+}
+
+/* 
+   NAVBAR (top bar)
+   =========================== */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 2rem;
+  background-color: #4a6d8c !important;
+  color: #fff !important;
+}
+
+.navbar a {
+  color: #fff !important;
+  text-decoration: none !important;
+  margin-left: 1rem;
+}
+
+.navbar a:hover {
+  text-decoration: underline !important;
+}
+
+.navbar .navbar-brand {
+  font-weight: bold;
+  color: #fff !important;
+}
+
+.navbar .search {
+  margin-left: auto;
+}
+
