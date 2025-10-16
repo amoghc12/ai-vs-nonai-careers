@@ -289,6 +289,7 @@ display(pd.DataFrame({"📌 Step 10: Cleaned dataset saved": [out_path]}))
 
 # Exploratory Data Analysis (EDA) with visualizations
 
+
 ```{python}
 #| echo: true
 import re, numpy as np, pandas as pd, plotly.express as px
@@ -343,6 +344,17 @@ else:
     fig.update_layout(title_x=0.02, margin=dict(l=10, r=10, t=40, b=10))
     fig.show()
 
+
+
+##  Interpretation 3.1
+
+display(Markdown(r"""
+Interpretation: 
+The heatmap effectively highlights which columns in the dataset contain missing data and the extent of these gaps. Columns with large red sections indicate significant levels of missingness, signaling potential issues that could arise during analysis or modeling. By visualizing the missing values, this step aids in prioritizing which variables need to be imputed, dropped, or further investigated before proceeding with downstream analysis.
+"""))
+
+
+
 # 3.2 Job Postings by Industry ---------------------------------------
 H("3.2 Job Postings by Industry")
 
@@ -371,6 +383,16 @@ if naics_cols:
     fig.show()
 else:
     note("No NAICS name columns found (e.g., **NAICS_2022_6_NAME**). Skipping industry plots.")
+
+
+## Interpretation
+
+
+display(Markdown(r"""
+Interpretation: 
+The bar chart provides a clear overview of which industries boast the highest number of job postings. This visualization showcases key sectors that are driving employment demand, offering insight into the concentration of labor in various fields. By analyzing this distribution, it becomes possible to compare skill demands and salary trends across different industries effectively.
+"""))
+
 
 # 3.3 Salary Distribution by Industry --------------------------------
 H("3.3 Salary Distribution by Industry")
@@ -403,6 +425,16 @@ if ("ANNUAL_SALARY" in df.columns) and naics_cols:
 else:
     note("**ANNUAL_SALARY** or a NAICS name column is missing. Skipping salary-by-industry.")
 
+
+## Interpretation
+
+display(Markdown(r"""
+Interpretation: 
+Boxplots display the spread and median of annual salaries across the top industries categorized by job posting volume. There is noticeable variation in compensation levels between different industries, reflecting the distinct levels of specialization and skill intensity required. Additionally, this visualization assists in identifying outliers and evaluating relative pay competitiveness across various economic sectors.
+"""))
+
+
+
 # 3.4 Remote vs. On-Site Jobs ----------------------------------------
 H("3.4 Remote vs. On-Site Jobs")
 
@@ -425,6 +457,17 @@ if rt_col:
     fig.show()
 else:
     note("**REMOTE_TYPE_NAME** not found. Skipping remote vs. on-site chart.")
+
+
+
+## Interpretation
+
+display(Markdown(r"""
+Interpretation: 
+The pie chart illustrates the proportions of remote, hybrid, and on-site job postings, capturing the evolving preferences for work modalities. This breakdown reveals the extent of remote work adoption within the dataset, shedding light on current trends in the labor market. Understanding the distribution of job types provides valuable context regarding demand for digital collaboration and skills tailored for remote work environments.
+"""))
+
+
 
 # 3.5 Job Postings Over Time (interactive) ----------------------------
 H("3.5 Job Postings Over Time")
@@ -449,6 +492,15 @@ if date_col:
         note("All POSTED dates are invalid or missing after parsing.")
 else:
     note("No date column (e.g., **POSTED**) available. Skipping time series.")
+
+
+
+## Interpretation
+
+display(Markdown(r"""
+Interpretation: 
+The line chart tracks the monthly volumes of job postings, highlighting trends in hiring and seasonality. Notable spikes or dips may correlate with macroeconomic shifts, hiring freezes, or phases of post-pandemic recovery. Observing these temporal trends offers critical insights for analyzing growth or contraction in demand for labor across AI-related roles versus non-AI roles.
+"""))
 
 
 # 3.6 Top Companies ---------------------------------------------------
@@ -477,6 +529,15 @@ if comp_col:
 else:
     note("Company column not found. Skipping top companies.")
 
+
+## Interpretation
+
+display(Markdown(r"""
+Interpretation: 
+The bar chart enumerates the organizations with the highest number of job postings, identifying leading employers in the market. This analysis reflects which companies are actively scaling their workforce or expanding specific departments, enabling a clearer understanding of hiring dynamics. Recognizing these top employers can support targeted job market analysis and reveal potential partnership opportunities.
+"""))
+
+
 # 3.7 Job Postings by State ------------------------------------------
 H("3.7 Job Postings by State")
 
@@ -502,6 +563,14 @@ if state_col:
     fig.show()
 else:
     note("Neither **STATE_NAME** nor **STATE** is available. Skipping geography plot.")
+
+## Interpretation
+
+display(Markdown(r"""
+Interpretation: 
+This visualization emphasizes the geographic distribution of job postings, spotlighting states with the most activity. States like California, Texas, and New York often dominate the landscape due to their dense economic and technological hubs. Understanding this geographic concentration can aid in identifying regional opportunities and trends in workforce mobility.
+"""))
+
 
 # 3.8 Most Requested Skills ------------------------------------------
 H("3.8 Most Requested Skills")
@@ -537,6 +606,15 @@ if skills_col:
     fig.show()
 else:
     note("No skills columns found (e.g., **SKILLS_NAME**). Skipping skills analysis.")
+
+
+## Interpretation
+
+
+display(Markdown(r"""
+Interpretation: 
+The skills frequency chart highlights the top 20 skills most frequently mentioned in job postings. This data reveals the competencies that are in highest demand, such as Python, SQL, data analysis, and project management. By providing this information, the output offers actionable guidance for aligning workforce development efforts, designing relevant curricula, and setting professional development priorities.
+"""))
 
 
 ```
