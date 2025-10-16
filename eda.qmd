@@ -28,6 +28,7 @@ csl: csl/econometrica.csl
 from theme.plotly_theme import apply_plotly_theme
 apply_plotly_theme()
 ```
+
 ```{python}
 #| echo: true
 
