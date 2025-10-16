@@ -1,0 +1,25 @@
+---
+title: "Skill Gap Analysis"
+subtitle: "Personal vs. market-based skill assessment"
+author:
+  - name: "Group 1"
+    affiliation: "Boston University"
+  - name: "Amogh Challa"
+  - name: "Othmane Elouardi"
+date: "September 25, 2025"
+page-layout: article
+toc: true
+toc-location: right
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+
+bibliography: references.bib
+csl: csl/econometrica.csl
+---
+
+
+## Personal Skill Profile
+## Market Skill Demand
+## Gap Comparison
