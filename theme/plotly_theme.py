@@ -30,3 +30,4 @@ def apply_plotly_theme():
     px.defaults.template = "ba_theme"
     px.defaults.height = 450
     px.defaults.color_continuous_scale = "Blues"
+
