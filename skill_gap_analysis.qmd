@@ -20,6 +20,575 @@ csl: csl/econometrica.csl
 ---
 
 
-## Personal Skill Profile
-## Market Skill Demand
-## Gap Comparison
+
+
+# Skill Gap Analysis
+
+## Team-based skill dataframe
+
+```{python}
+#| echo: true
+# Team Skill Matrix (UPDATED to your 10 skills) + Interactive Visuals
+import pandas as pd, numpy as np
+import plotly.express as px, plotly.graph_objects as go
+from IPython.display import display, Markdown
+
+# -----------------------------
+# 1) Skill levels (1–5) — per your latest notes
+# -----------------------------
+skills_data = {
+    "Name": ["Amogh", "Othmane"],
+    # very well (both)
+    "Communication": [5, 5],
+    # acceptable (both)
+    "Data Analysis": [3, 3],
+    # Othmane higher
+    "Management": [3, 4],
+    # doing well (both)
+    "SQL": [4, 4],
+    # Othmane higher; Amogh very close
+    "Problem Solving": [4, 5],
+    # doing well (both)
+    "Leadership": [4, 4],
+    # acceptable (both)
+    "Computer Science": [3, 3],
+    # Othmane doing well; Amogh slightly above
+    "Operations": [5, 4],
+    # Othmane doing well; Amogh close
+    "Project Management": [3, 4],
+    # doing well (both)
+    "Business Process": [4, 4],
+}
+
+# Optional target levels for Business Analyst roles (1–5)
+target_level = {
+    "Communication": 5,
+    "Data Analysis": 4,
+    "Management": 4,
+    "SQL": 4,
+    "Problem Solving": 4,
+    "Leadership": 4,
+    "Computer Science": 3,
+    "Operations": 4,
+    "Project Management": 4,
+    "Business Process": 4,
+}
+
+# -----------------------------
+# 2) Build & validate dataframe
+# -----------------------------
+df_skills = pd.DataFrame(skills_data).set_index("Name")
+df_skills = (
+    df_skills.apply(pd.to_numeric, errors="coerce")
+             .fillna(1).clip(1, 5).round().astype(int)
+)
+
+team_avg = df_skills.mean().rename("Team Avg (1–5)")
+summary = pd.concat(
+    [team_avg, df_skills.min().rename("Min"), df_skills.max().rename("Max")], axis=1
+).sort_values("Team Avg (1–5)", ascending=False)
+
+display(Markdown("### Team Skills — DataFrame (Updated)"))
+display(df_skills)
+display(Markdown("### Team Summary by Skill"))
+display(summary)
+
+# -----------------------------
+# 3) Interactive heatmap
+# -----------------------------
+px.defaults.template = "plotly_white"
+px.defaults.width = 980
+px.defaults.height = 460
+
+fig_heat = px.imshow(
+    df_skills.values,
+    x=df_skills.columns, y=df_skills.index,
+    color_continuous_scale="Blues", zmin=1, zmax=5,
+    labels=dict(color="Level (1–5)")
+)
+fig_heat.update_layout(
+    title=dict(text="Skill Levels (1–5): Amogh & Othmane — Updated", x=0.02),
+    margin=dict(l=10, r=10, t=60, b=10),
+    xaxis_title="Skill", yaxis_title="Member"
+)
+fig_heat.update_traces(hovertemplate="Member: %{y}<br>Skill: %{x}<br>Level: %{z}<extra></extra>")
+fig_heat.show()
+
+# -----------------------------
+# 4) Member comparison bars (dropdown to switch)
+# -----------------------------
+members = df_skills.index.tolist()
+skills  = df_skills.columns.tolist()
+
+def frame_for(member):
+    d = pd.DataFrame({
+        "Skill": skills,
+        member: df_skills.loc[member, skills].values,
+        "Team Avg": team_avg[skills].values
+    }).sort_values(member, ascending=False)
+    return [
+        go.Bar(x=d[member], y=d["Skill"], orientation="h", name=member),
+        go.Bar(x=d["Team Avg"], y=d["Skill"], orientation="h", name="Team Avg")
+    ]
+
+base = members[0]
+fig_comp = go.Figure(data=frame_for(base))
+fig_comp.update_layout(
+    barmode="group",
+    title=dict(text=f"Skill Profile — {base} vs Team Avg (Updated)", x=0.02),
+    xaxis_title="Level (1–5)", yaxis_title="Skill",
+    margin=dict(l=10, r=10, t=60, b=10),
+    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+)
+fig_comp.frames = [go.Frame(name=m, data=frame_for(m)) for m in members]
+fig_comp.update_layout(
+    updatemenus=[dict(
+        type="dropdown", x=1.0, xanchor="right", y=1.15, yanchor="top",
+        buttons=[dict(label=m, method="animate",
+                      args=[[m], {"mode":"immediate","fromcurrent":True,
+                                  "transition":{"duration":0},
+                                  "frame":{"duration":0, "redraw":True}}]) for m in members]
+    )]
+)
+fig_comp.show()
+
+# -----------------------------
+# 5) Radar: Team Avg vs Target (exec view)
+# -----------------------------
+target_series = pd.Series(target_level).reindex(skills).fillna(3).clip(1,5)
+radar_df = pd.DataFrame({
+    "Skill": skills,
+    "Team Avg": team_avg.reindex(skills).values,
+    "Target": target_series.values
+})
+cats = radar_df["Skill"].tolist()
+team_vals = radar_df["Team Avg"].tolist()
+targ_vals = radar_df["Target"].tolist()
+cats_closed = cats + [cats[0]]
+team_closed = team_vals + [team_vals[0]]
+targ_closed = targ_vals + [targ_vals[0]]
+
+fig_radar = go.Figure()
+fig_radar.add_trace(go.Scatterpolar(r=team_closed, theta=cats_closed, fill='toself', name='Team Avg'))
+fig_radar.add_trace(go.Scatterpolar(r=targ_closed, theta=cats_closed, fill='toself', name='Target'))
+fig_radar.update_layout(
+    title=dict(text="Skill Radar — Team Avg vs Target (Updated)", x=0.02),
+    polar=dict(radialaxis=dict(visible=True, range=[0,5])),
+    showlegend=True, height=620,
+    margin=dict(l=10, r=10, t=60, b=10)
+)
+fig_radar.show()
+
+# -----------------------------
+# 6) Quick takeaways (auto text)
+# -----------------------------
+gaps = (target_series - team_avg.reindex(skills)).sort_values(ascending=False)
+top_gaps = gaps[gaps > 0]
+bullets = [f"- **{s}**: raise by ~{int(np.ceil(g))} level(s) (team avg {team_avg[s]:.1f} vs target {target_series[s]:.1f})"
+           for s, g in top_gaps.items()]
+display(Markdown("### Quick Takeaways (Updated)"))
+display(Markdown("\n".join(bullets) if bullets else "- Team meets or exceeds target across listed skills."))
+
+```
+
+## Team skills Comparison to industry requirements
+
+```{python}
+
+#| echo: true
+# Compare Amogh & Othmane to industry requirements (focused skill list)
+import pandas as pd, numpy as np, re
+import plotly.express as px, plotly.graph_objects as go
+from IPython.display import display, Markdown
+
+# ------------------------------------------------------------
+# 0) Team skill levels (1–5) based on your brief
+# ------------------------------------------------------------
+skills_data = {
+    "Name": ["Amogh", "Othmane"],
+    # communication: very well (both)
+    "Communication": [5, 5],
+    # data analysis: acceptable (both)
+    "Data Analysis": [3, 3],
+    # management: Othmane higher
+    "Management": [3, 4],
+    # SQL: doing well (both)
+    "SQL": [4, 4],
+    # problem solving: Othmane higher, Amogh very close
+    "Problem Solving": [4, 5],
+    # leadership: both doing well
+    "Leadership": [4, 4],
+    # computer science: acceptable (both)
+    "Computer Science": [3, 3],
+    # operations: Othmane doing well; Amogh slightly above
+    "Operations": [5, 4],
+    # project management: Othmane doing well; Amogh close
+    "Project Management": [3, 4],
+    # business process: both doing well
+    "Business Process": [4, 4],
+}
+df_skills = pd.DataFrame(skills_data).set_index("Name")
+
+# ------------------------------------------------------------
+# 1) Industry demand for the same skills (from Lightcast)
+#    - tries cleaned file first, then raw
+#    - parses skills columns and counts exact token matches
+# ------------------------------------------------------------
+def load_lightcast():
+    for p in ["Data/lightcast_clean_final.csv", "Data/lightcast_job_postings.csv"]:
+        try:
+            return pd.read_csv(p, low_memory=False)
+        except Exception:
+            pass
+    return None
+
+jobs = load_lightcast()
+selected_skills = list(df_skills.columns)
+
+def market_counts_from_jobs(jobs_df, selected):
+    if jobs_df is None:
+        # fallback: equal weights if dataset not available
+        return pd.DataFrame({"Skill": selected, "Mentions": [1]*len(selected)})
+
+    skill_cols = [c for c in [
+        "SKILLS_NAME","SPECIALIZED_SKILLS_NAME","COMMON_SKILLS_NAME",
+        "SOFTWARE_SKILLS_NAME","JOB_SKILLS","SKILL_NAME"
+    ] if c in jobs_df.columns]
+    if not skill_cols:
+        return pd.DataFrame({"Skill": selected, "Mentions": [1]*len(selected)})
+
+    # build a flat Series of atomic, lowercased skills
+    tokens = []
+    for c in skill_cols:
+        s = (jobs_df[c].dropna().astype(str)
+             .str.replace(r"\[|\]", "", regex=True)
+             .str.replace('"', "", regex=False)
+             .str.replace(r"\\n", " ", regex=True)
+             .str.split(r"\s*,\s*|\|"))
+        tokens.extend([t.strip().lower() for row in s for t in row if t and t.strip()])
+
+    tok_series = pd.Series(tokens, dtype="string")
+    counts = []
+    for skill in selected:
+        skill_l = skill.lower()
+        counts.append(int((tok_series == skill_l).sum()))
+    dfm = pd.DataFrame({"Skill": selected, "Mentions": counts})
+    # if everything is zero (naming mismatch), give minimal nonzero so visuals still scale
+    if dfm["Mentions"].sum() == 0:
+        dfm["Mentions"] = 1
+    return dfm
+
+df_market = market_counts_from_jobs(jobs, selected_skills)
+
+display(Markdown("### Industry Demand — Top Skills (Lightcast subset)"))
+display(df_market.sort_values("Mentions", ascending=False))
+
+# ------------------------------------------------------------
+# 2) Team vs Market alignment table
+#    Scale demand to 1–5 so it’s comparable to skill levels
+# ------------------------------------------------------------
+team_avg = df_skills.mean().rename("Team Avg (1–5)")
+df_compare = df_market.merge(team_avg.rename_axis("Skill"), left_on="Skill", right_index=True, how="left")
+
+# scale mentions → 1–5 (robust to constant series)
+mmin, mmax = df_compare["Mentions"].min(), df_compare["Mentions"].max()
+if mmax == mmin:
+    df_compare["Scaled Demand (1–5)"] = 3
+else:
+    df_compare["Scaled Demand (1–5)"] = (1 + 4*(df_compare["Mentions"]-mmin)/(mmax-mmin)).round(2)
+
+df_compare["Gap (Market - Team)"] = (df_compare["Scaled Demand (1–5)"] - df_compare["Team Avg (1–5)"]).round(2)
+
+display(Markdown("### Team vs Market — Alignment"))
+display(df_compare.sort_values("Gap (Market - Team)", ascending=False))
+
+# ------------------------------------------------------------
+# 3) Visualization 1 — Grouped bars (clean executive view)
+# ------------------------------------------------------------
+fig1 = go.Figure()
+fig1.add_trace(go.Bar(
+    x=df_compare["Skill"], y=df_compare["Scaled Demand (1–5)"],
+    name="Industry Demand (scaled)", marker_color="#1f77b4", opacity=0.70
+))
+fig1.add_trace(go.Bar(
+    x=df_compare["Skill"], y=df_compare["Team Avg (1–5)"],
+    name="Team Average", marker_color="#ff7f0e", opacity=0.90
+))
+fig1.update_layout(
+    title=dict(text="Market Demand vs Team Proficiency (1–5 scale)", x=0.02),
+    barmode="group",
+    xaxis_tickangle=-35,
+    xaxis_title="Skill",
+    yaxis_title="Level (1–5)",
+    margin=dict(l=10, r=10, t=60, b=120),
+    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+)
+fig1.show()
+
+# ------------------------------------------------------------
+# 4) Visualization 2 — Bubble chart (demand vs proficiency)
+# ------------------------------------------------------------
+fig2 = px.scatter(
+    df_compare, x="Team Avg (1–5)", y="Scaled Demand (1–5)",
+    size="Mentions", color="Gap (Market - Team)",
+    hover_name="Skill", text="Skill",
+    title="Skill Demand vs Team Proficiency — Gap View",
+    color_continuous_scale="RdYlBu_r"
+)
+fig2.update_traces(
+    textposition="top center",
+    marker=dict(sizemode="area", line=dict(width=1, color="DarkSlateGrey"))
+)
+fig2.update_layout(
+    xaxis_title="Team Average (1–5)",
+    yaxis_title="Market Demand (scaled 1–5)",
+    margin=dict(l=10, r=10, t=60, b=10),
+    height=600
+)
+fig2.show()
+
+# ------------------------------------------------------------
+# 5) Top gaps (actionable list)
+# ------------------------------------------------------------
+top_gaps = df_compare.sort_values("Gap (Market - Team)", ascending=False).head(5)[
+    ["Skill", "Team Avg (1–5)", "Scaled Demand (1–5)", "Gap (Market - Team)"]
+]
+display(Markdown("### 🔍 Top 5 Gaps to Prioritize"))
+display(top_gaps)
+
+# Quick narrative for BA audience
+focus = ", ".join(top_gaps["Skill"].head(3).tolist())
+display(Markdown(f"""
+**Takeaway:** Team strengths show in **Communication, Leadership, SQL**, and **Business Process**.
+Focus upskilling on: **{focus}** to align more tightly with market demand.  
+Use short, portfolio-ready artifacts (dashboards, case studies, SQL challenge write-ups) to close gaps fast.
+"""))
+
+
+```
+
+
+# Improvement plan Proposition
+
+```{python}
+
+#| echo: true
+# Improvement plan section: gaps, ownership, roadmap, actions, visuals
+import pandas as pd
+import numpy as np
+import plotly.express as px
+from IPython.display import display, Markdown
+
+# -------------------------------------------------------------------
+# 0) Ensure team matrix exists (fallback to latest values)
+# -------------------------------------------------------------------
+try:
+    df_skills
+except NameError:
+    df_skills = pd.DataFrame({
+        "Name": ["Amogh", "Othmane"],
+        "Communication": [5, 5],
+        "Data Analysis": [3, 3],
+        "Management": [3, 4],
+        "SQL": [4, 4],
+        "Problem Solving": [4, 5],
+        "Leadership": [4, 4],
+        "Computer Science": [3, 3],
+        "Operations": [5, 4],
+        "Project Management": [3, 4],
+        "Business Process": [4, 4],
+    }).set_index("Name")
+
+df_skills = (df_skills.apply(pd.to_numeric, errors="coerce")
+                        .clip(1,5).round().astype(int))
+
+# -------------------------------------------------------------------
+# 1) Targets & gaps (Target − Current, clipped at 0)
+# -------------------------------------------------------------------
+targets = {
+    "Communication": 5, "Data Analysis": 4, "Management": 4, "SQL": 4,
+    "Problem Solving": 4, "Leadership": 4, "Computer Science": 3,
+    "Operations": 4, "Project Management": 4, "Business Process": 4,
+}
+target_s = pd.Series(targets).reindex(df_skills.columns)
+gaps = (target_s - df_skills).clip(lower=0)
+
+display(Markdown("### Individual Skill Gaps (vs. Target)"))
+display(gaps.style.background_gradient(cmap="Reds", axis=None))
+
+# -------------------------------------------------------------------
+# 2) Priority skills per member (top 3 by gap)
+# -------------------------------------------------------------------
+priority = {}
+for member in df_skills.index:
+    s = gaps.loc[member]
+    priority[member] = s[s>0].sort_values(ascending=False).head(3).index.tolist()
+
+display(Markdown("### Priority Focus per Member"))
+for m, skills in priority.items():
+    display(Markdown(f"- **{m}** → " + (", ".join(skills) if skills else "meets or exceeds target levels.")))
+
+# -------------------------------------------------------------------
+# 3) Team focus and overview chart
+# -------------------------------------------------------------------
+team_avg_gap = gaps.mean().sort_values(ascending=False)
+display(Markdown("### Team Collaboration Focus (Average Gaps)"))
+display(team_avg_gap.to_frame("Avg Gap (1–5)"))
+
+fig = px.bar(
+    team_avg_gap.reset_index().rename(columns={"index":"Skill", 0:"Avg Gap"}),
+    x="Skill", y=team_avg_gap.values,
+    title="Average Skill Gaps Across Team (1–5)",
+    text=[f"{v:.1f}" for v in team_avg_gap.values],
+    color=team_avg_gap.values, color_continuous_scale="Reds", height=450
+)
+fig.update_traces(textposition="outside")
+fig.update_layout(xaxis_title="Skill", yaxis_title="Gap (Target − Current)",
+                  margin=dict(l=10,r=10,t=60,b=80))
+fig.show()
+
+# -------------------------------------------------------------------
+# 4) Ownership plan for upcoming focus areas
+#    - choose skills that need work, ordered by team impact
+#    - alternate lead when ties; cap leads per person to keep it even
+# -------------------------------------------------------------------
+skills_need = team_avg_gap[team_avg_gap > 0].index.tolist()
+max_leads = 2  # per person
+lead_count = {"Amogh": 0, "Othmane": 0}
+last_assigned = None
+rows = []
+
+for skill in skills_need:
+    a_gap = float(gaps.loc["Amogh", skill])
+    o_gap = float(gaps.loc["Othmane", skill])
+
+    if a_gap > o_gap:
+        lead, support = "Amogh", "Othmane"
+    elif o_gap > a_gap:
+        lead, support = "Othmane", "Amogh"
+    else:
+        # tie → rotate
+        lead, support = (("Othmane", "Amogh") if last_assigned == "Amogh"
+                         else ("Amogh", "Othmane"))
+
+    # simple cap so leads are spread
+    if lead_count[lead] >= max_leads and lead_count[support] < max_leads:
+        lead, support = support, lead
+
+    rows.append({
+        "Skill": skill,
+        "Lead": lead,
+        "Support": support,
+        "Lead Gap": gaps.loc[lead, skill],
+        "Support Gap": gaps.loc[support, skill]
+    })
+    lead_count[lead] += 1
+    last_assigned = lead
+    if lead_count["Amogh"] >= max_leads and lead_count["Othmane"] >= max_leads:
+        break
+
+df_own = pd.DataFrame(rows)
+display(Markdown("### Ownership Plan"))
+if len(df_own):
+    display(df_own[["Skill","Lead","Support","Lead Gap","Support Gap"]])
+else:
+    display(Markdown("_No gaps detected across skills._"))
+
+# -------------------------------------------------------------------
+# 5) 4-month roadmap (lead ↔ support rotates on repeats)
+# -------------------------------------------------------------------
+months = ["Month 1","Month 2","Month 3","Month 4"]
+plan_rows = []
+if len(df_own) == 0:
+    plan_rows = [{"Month": m, "Focus Area": "Portfolio Practice",
+                  "Lead": "Amogh" if i%2==0 else "Othmane",
+                  "Support": "Othmane" if i%2==0 else "Amogh",
+                  "Learning Mode": "Pair project & code review",
+                  "Expected Outcome": "Publish BA case study"}
+                 for i,m in enumerate(months)]
+else:
+    for i, m in enumerate(months):
+        src = df_own.iloc[i % len(df_own)].copy()
+        if i >= len(df_own):
+            src["Lead"], src["Support"] = src["Support"], src["Lead"]
+        plan_rows.append({
+            "Month": m,
+            "Focus Area": src["Skill"],
+            "Lead": src["Lead"],
+            "Support": src["Support"],
+            "Learning Mode": ("Hands-on mini-project + course" if i == 0 else
+                              "Case study & sprint rituals" if i == 1 else
+                              "Shadow → swap roles & peer review" if i == 2 else
+                              "Stakeholder presentation & retros"),
+            "Expected Outcome": ("SQL→BI pipeline & dashboard" if i == 0 else
+                                 "Agile board, story map, status report" if i == 1 else
+                                 "Documented playbook & SOPs" if i == 2 else
+                                 "Executive data story & slide deck")
+        })
+roadmap = pd.DataFrame(plan_rows)
+display(Markdown("### 4-Month Roadmap"))
+display(roadmap)
+
+# -------------------------------------------------------------------
+# 6) Resources by focus area (BA-oriented)
+# -------------------------------------------------------------------
+resource_map = {
+    "Data Analysis": [
+        "Google Data Analytics Professional Certificate (Coursera)",
+        "Data Visualization with Power BI & Tableau (LinkedIn Learning)",
+    ],
+    "Management": [
+        "Strategic Decision Making (edX)",
+        "Leadership Communication (Coursera)",
+    ],
+    "Project Management": [
+        "Google Project Management Certificate (Coursera)",
+        "Agile Project Management Foundations (LinkedIn Learning)",
+    ],
+    "Operations": [
+        "Operational Analytics & Process Optimization (edX)",
+        "Lean Six Sigma Foundations (Coursera)",
+    ],
+    "Problem Solving": [
+        "Critical Thinking for Business Analysts (Udemy)",
+        "Analytical Problem Solving (LinkedIn Learning)",
+    ],
+}
+display(Markdown("### Recommended Courses & Learning Paths"))
+for _, r in roadmap.iterrows():
+    s = r["Focus Area"]
+    if s in resource_map:
+        display(Markdown(f"**{s}**"))
+        for c in resource_map[s]:
+            display(Markdown(f"- {c}"))
+
+# -------------------------------------------------------------------
+# 7) Personal action items 
+# -------------------------------------------------------------------
+def top_actions(member, n=3):
+    s = gaps.loc[member].sort_values(ascending=False)
+    real = s[s>0].index.tolist()
+    out = real[:n]
+    if len(out) < n:
+        add = [k for k in team_avg_gap.index if k not in out]
+        out.extend(add[:(n-len(out))])
+    return out[:n]
+
+amogh_actions = top_actions("Amogh", 3)
+othmane_actions = top_actions("Othmane", 3)
+
+display(Markdown("### Personal Action Items"))
+display(Markdown(f"- **Amogh** → {', '.join(amogh_actions)}"))
+display(Markdown(f"- **Othmane** → {', '.join(othmane_actions)}"))
+
+# -------------------------------------------------------------------
+# 8) Quick summary
+# -------------------------------------------------------------------
+display(Markdown(f"""
+**Summary**  
+Upcoming work is organized by impact areas with clear lead/support roles and a month-by-month plan.
+Each member has three concrete action items to convert learning into portfolio-quality outputs.
+"""))
+
+
+```
