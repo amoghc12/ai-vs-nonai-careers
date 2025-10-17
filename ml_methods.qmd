@@ -20,5 +20,190 @@ csl: csl/econometrica.csl
 ---
 
 
-## Feature Engineering
-## Models & Evaluation
+# Regression, Classification, and Topic Insights
+
+```{python}
+#| echo: false
+from theme.plotly_theme import apply_plotly_theme
+apply_plotly_theme()
+```
+## Unsupervised Learning — K-Means with SOC/NAICS/ONET reference
+We cluster job postings using numeric + skill features, then **interpret** clusters with official
+SOC/NAICS/ONET labels already present in the Lightcast dataset.
+
+
+
+```{python}
+
+#| label: unsup-kmeans-lightcast
+#| echo: true
+#| warning: false
+#| fig-width: 9
+#| fig-height: 6
+
+import numpy as np, pandas as pd
+import plotly.express as px, plotly.graph_objects as go
+from pathlib import Path
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+from sklearn.feature_extraction.text import CountVectorizer
+from IPython.display import display, Markdown
+
+np.random.seed(42)
+
+# -------- LOAD --------
+
+DATA = Path("Data/lightcast_job_postings.csv")
+df = pd.read_csv(DATA, low_memory=False)
+display(Markdown(f"**Loaded** `{DATA.name}` — shape: {df.shape[0]:,} × {df.shape[1]}"))
+
+# -------- SALARY (annualized + outlier guard) --------
+
+salary_main = pd.to_numeric(df.get("SALARY"), errors="coerce")
+pp_col = df.get("ORIGINAL_PAY_PERIOD")
+is_annual = (pp_col.astype(str).str.lower().str.strip().isin(["year","annual","annually","yr"])) if (pp_col is not None) else pd.Series(True, index=df.index)
+salary_main = salary_main.where(is_annual, np.nan)
+
+salary_from = pd.to_numeric(df.get("SALARY_FROM"), errors="coerce")
+salary_to   = pd.to_numeric(df.get("SALARY_TO"),   errors="coerce")
+salary_alt  = (salary_from + salary_to) / 2
+salary_alt  = salary_alt.where(is_annual, np.nan)
+salary      = salary_main.where(~salary_main.isna(), salary_alt)
+
+# Trim extreme outliers if we have enough non-null salary
+
+q_ok = salary.notna().sum() > 200
+q_lo, q_hi = (salary.quantile(0.05), salary.quantile(0.995)) if q_ok else (None, None)
+salary = salary.mask(q_ok & ((salary < q_lo) | (salary > q_hi)))
+
+# -------- EXPERIENCE --------
+
+exp_min = pd.to_numeric(df.get("MIN_YEARS_EXPERIENCE"), errors="coerce")
+exp_max = pd.to_numeric(df.get("MAX_YEARS_EXPERIENCE"), errors="coerce")
+experience = exp_min.where(~exp_min.isna(), exp_max).fillna((exp_min + exp_max) / 2)
+experience = experience.mask(experience < 0)
+
+# -------- REMOTE FLAG --------
+
+remote = df.get("REMOTE_TYPE_NAME").astype(str).str.lower().isin(
+["remote","hybrid","remote/hybrid","remote - usa","remote - us"]
+).astype("int8")
+
+# -------- STATE (top 10 one-hot) --------
+
+state = df.get("STATE_NAME").astype(str)
+top_states = state.value_counts().nlargest(10).index
+state_10 = state.where(state.isin(top_states), "OTHER")
+state_dummies = pd.get_dummies(state_10, prefix="state", dtype="int8")
+
+# -------- SKILLS (BoW top-50) --------
+
+skills_text = (
+df.get("SKILLS_NAME").fillna("").astype(str) + " " +
+df.get("SPECIALIZED_SKILLS_NAME").fillna("").astype(str) + " " +
+df.get("SOFTWARE_SKILLS_NAME").fillna("").astype(str) + " " +
+df.get("COMMON_SKILLS_NAME").fillna("").astype(str)
+)
+
+# keep '-' escaped in regex class
+
+vec = CountVectorizer(lowercase=True, token_pattern=r"[A-Za-z][A-Za-z+-.#]{1,}", max_features=50)
+skills_bow = pd.DataFrame(vec.fit_transform(skills_text).toarray(),
+columns=[f"kw_{t}" for t in vec.get_feature_names_out()])
+
+# -------- FEATURE MATRIX --------
+
+X = pd.concat([
+pd.DataFrame({"salary": salary, "experience": experience, "remote": remote}),
+state_dummies,
+skills_bow
+], axis=1)
+
+valid = X.notna().any(axis=1)
+X = X[valid].fillna(0).astype(float)
+
+rows_total = len(df); rows_used = len(X)
+sal_nonnull = int(X["salary"].replace(0, np.nan).notna().sum()) if "salary" in X.columns else 0
+exp_nonnull = int(X["experience"].replace(0, np.nan).notna().sum()) if "experience" in X.columns else 0
+display(Markdown(f"- **Feature matrix:** {rows_used:,} rows × {X.shape[1]} features  (coverage — salary: {sal_nonnull:,}, experience: {exp_nonnull:,})"))
+
+# Optional sample for speed (increase/remove if needed)
+
+MAX_ROWS = 20000
+Xs = X.sample(n=MAX_ROWS, random_state=42) if len(X) > MAX_ROWS else X
+
+# -------- SCALE --------
+
+scaler = StandardScaler()
+Xs_scaled = scaler.fit_transform(Xs)
+
+# -------- CHOOSE K (loop-free) --------
+
+Ks = list(range(3, 8))
+fits    = [KMeans(n_clusters=k, n_init=10, random_state=42).fit(Xs_scaled) for k in Ks]
+inertia = [m.inertia_ for m in fits]
+sil     = [silhouette_score(Xs_scaled, m.labels_) for m in fits]
+best_k  = Ks[int(np.argmax(sil))]
+display(Markdown(f"**Chosen K:** {best_k} (max silhouette)"))
+
+# -------- INTERACTIVE PLOTS --------
+
+fig_elbow = go.Figure(go.Scatter(x=Ks, y=inertia, mode="lines+markers"))
+fig_elbow.update_layout(title="Elbow Curve (Inertia) vs K", xaxis_title="K", yaxis_title="Inertia",
+margin=dict(l=10,r=10,t=50,b=10))
+fig_elbow.show()
+
+fig_sil = go.Figure(go.Scatter(x=Ks, y=sil, mode="lines+markers"))
+fig_sil.update_layout(title="Silhouette Score vs K", xaxis_title="K", yaxis_title="Silhouette",
+margin=dict(l=10,r=10,t=50,b=10))
+fig_sil.show()
+
+# -------- FINAL K-MEANS --------
+
+km = KMeans(n_clusters=best_k, n_init=10, random_state=42).fit(Xs_scaled)
+clusters = pd.Series(km.labels_, index=Xs.index, name="cluster")
+
+# Scatter: salary vs experience (interactive)
+
+df_scatter = pd.DataFrame({"salary": Xs.get("salary"), "experience": Xs.get("experience"), "cluster": clusters.astype(str)}).dropna()
+(len(df_scatter) > 0) and px.scatter(
+df_scatter, x="salary", y="experience", color="cluster",
+title="K-Means Clusters — Salary vs Experience (sample)",
+hover_data={"salary":":,.0f","experience":":.1f","cluster":True}
+).update_layout(margin=dict(l=10,r=10,t=60,b=10)).show()
+
+# Centers back-transformed (first 3 numeric features if present)
+
+cent_cols = [c for c in ["salary","experience","remote"] if c in Xs.columns]
+cent_idx  = [Xs.columns.get_loc(c) for c in cent_cols]
+cent_full = km.cluster_centers_
+
+# pad centers to Xs width before inverse_transform (no loops, pad with zeros)
+
+pad_w = Xs.shape[1] - cent_full.shape[1]
+cent_inv = scaler.inverse_transform(np.hstack([cent_full, np.zeros((cent_full.shape[0], pad_w))]))[:, cent_idx]
+centers_df = pd.DataFrame(cent_inv, columns=[f"{c}~center" for c in cent_cols])
+display(Markdown("### Cluster Centers (approx; numeric features)")); display(centers_df.round(2))
+
+# -------- REFERENCE LABEL CROSSTABS (SOC/NAICS/ONET) --------
+
+idx = Xs.index
+ct_soc2  = (pd.crosstab(clusters, df.loc[idx, "SOC_2_NAME"])        if "SOC_2_NAME"        in df.columns else None)
+ct_naics = (pd.crosstab(clusters, df.loc[idx, "NAICS_2022_2_NAME"]) if "NAICS_2022_2_NAME" in df.columns else None)
+ct_onet  = (pd.crosstab(clusters, df.loc[idx, "ONET_NAME"])         if "ONET_NAME"         in df.columns else None)
+
+(ct_soc2  is not None) and display(Markdown("### Cluster × SOC_2_NAME (top categories)"))  and display(ct_soc2.loc[:,  ct_soc2.sum().nlargest(8).index])
+(ct_naics is not None) and display(Markdown("### Cluster × NAICS_2022_2_NAME (top categories)")) and display(ct_naics.loc[:, ct_naics.sum().nlargest(8).index])
+(ct_onet  is not None) and display(Markdown("### Cluster × ONET_NAME (top categories)"))   and display(ct_onet.loc[:,  ct_onet.sum().nlargest(8).index])
+
+# Optional stacked bar for SOC_2_NAME
+
+(ct_soc2 is not None) and px.bar(
+ct_soc2.loc[:, ct_soc2.sum().nlargest(8).index].T, barmode="stack",
+title="SOC (Top) Composition by Cluster",
+labels={"value":"Count","variable":"Cluster","index":"SOC Category"}
+).update_layout(margin=dict(l=10,r=10,t=60,b=10)).show()
+
+
+```
