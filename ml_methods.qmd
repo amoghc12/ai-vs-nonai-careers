@@ -208,6 +208,12 @@ labels={"value":"Count","variable":"Cluster","index":"SOC Category"}
 
 ```
 
+###  Unsupervised Learning — K-Means Clustering
+The K-Means clustering analysis segmented the labor market data into three distinct groups based on salary, experience, and remote work characteristics. These clusters highlighted a hierarchy of job types, from entry-level, lower-paying roles to specialized and higher-compensated positions. Notably, AI-related occupations were more concentrated in the higher-salary cluster, aligning with technology-driven and analytical fields, while non-AI roles were often found in service-oriented and administrative sectors. This suggests that technical skills play a crucial role in determining earning potential. The elbow and silhouette plots validated the choice of three clusters, while scatterplots and industry composition charts clearly illustrated the differences between the occupational tiers. For job seekers, this analysis emphasizes the importance of aligning with data-centric and AI-adjacent fields to access better-paying career opportunities.
+
+
+
+
 ## Supervised Learning — Salary Regression with XGBoost
 
 ```{python}
@@ -350,6 +356,8 @@ display(Markdown("### Model Comparison Summary"))
 display(results_df.round(3))
 
 ```
+### Supervised Learning — Salary Regression
+The regression modeling results indicated that experience, location, and remote work flexibility are key predictors of salary outcomes. Linear regression provided moderate explanatory power, while the random forest model offered higher predictive accuracy by capturing non-linear relationships between job attributes and compensation. Both models confirmed that experience positively influences salary, although the benefits tend to decrease at more senior levels. Regional differences also played a significant role in salary variance, highlighting that geography continues to matter, even as remote work becomes more prevalent. These findings suggest that professionals can optimize earnings by gaining experience in high-demand technical areas and targeting positions that offer flexibility or geographic advantages. Regression plots and residual heatmaps vividly illustrated these dynamics, showing tighter error distributions and improved fits for the random forest model. Overall, the analysis reinforces the importance of experience and specialization in driving salary growth.
 
 
 # Topic-Based Analysis Pathways
@@ -549,6 +557,9 @@ else:
 
 ```
 
+### Topic-Based Classification — AI vs Non-AI Career Analysis
+The classification analysis utilized logistic regression and random forest models to differentiate between AI-related and non-AI job postings. Both models performed well, achieving accuracy levels between 77% and 79%, indicating a distinct difference between the two job categories. The random forest classifier slightly outperformed the logistic regression model, suggesting it captured more complex relationships among variables like salary, experience, and job title. The findings revealed that AI roles consistently offer higher pay and require greater technical expertise, while non-AI roles are generally more generalized. This highlights the widening skill divide and compensation patterns between emerging AI-driven roles and traditional career paths. Confusion matrices and feature importance charts effectively visualized these differences, underscoring that salary and experience are the strongest indicators for classifying a job as AI-related. For professionals, the message is clear: developing technical skills and analytical expertise is essential for staying competitive in the evolving labor market.
+
 
 # Modeling Requirements
 
@@ -685,3 +696,53 @@ corr = data.corr(numeric_only=True)
 px.imshow(corr, color_continuous_scale="RdBu", title="Feature Correlation Heatmap").update_layout(margin=dict(l=10,r=10,t=50,b=10)).show()
 
 ```
+
+### Feature Importance and Correlation Insights
+Feature analysis across all models confirmed that salary and experience are the most influential factors in differentiating job types and predicting compensation. Regional and remote work attributes also played significant, albeit secondary, roles, reflecting broader changes in the modern labor market. Correlation heatmaps showed positive relationships between experience and salary, while regional and remote factors consistently contributed to the overall understanding of compensation. These insights suggest that geography and workplace flexibility remain important in distributing opportunities, even as labor systems become more digital. For decision-makers, integrating experience and regional considerations into hiring, wage-setting, and training strategies is vital. Feature importance visualizations reinforced that salary, experience, and region are critical components for understanding labor dynamics and influencing predictive accuracy in both regression and classification models.
+
+
+## 4. Interpretation
+
+Each model in this report is supported by an interpretation of its purpose, data features, and labor-market relevance.
+
+### 4.1 Summary of What Was Modeled and Why
+
+This section examines differences between **AI-related and non-AI job markets** using regression and classification techniques.  
+The goal was to understand how salary, required experience, and regional distribution vary across job types and to identify where technology is influencing workforce trends.
+
+The modeling shows that **roles connected to emerging technologies tend to command higher salaries and greater remote flexibility**, while non-AI positions remain concentrated in traditional sectors and on-site work environments.  
+These outcomes are consistent with current labor-market research emphasizing that advances in artificial intelligence are **reshaping work patterns rather than eliminating jobs**.  
+Recent studies describe this as a shift toward **job redefinition and new skill combinations**, not a decline in employment opportunities [@George_2024; @Rion].  
+Broader economic analysis also highlights that technology adoption is **rebalancing labor and capital across industries**, favoring innovation-intensive regions and specialized occupations [@Huang; @Zarifhonarvar].  
+Overall, the modeling supports evidence that technological progress is producing **structural adjustment and skill specialization** rather than contraction in employment [@George_George_2025; @Shen_1970].
+
+---
+
+### 4.2 Description of Features Used
+
+Models were built from the **Lightcast job-postings dataset**, incorporating a combination of quantitative and categorical variables:
+
+- **Salary metrics:** base and range-based salaries, normalized for comparison.  
+- **Experience level:** average of minimum and maximum years required.  
+- **Remote flexibility:** indicator for remote or hybrid work availability.  
+- **Geographic region:** top U.S. states grouped by posting frequency.  
+- **AI relevance:** keyword-based flag capturing mentions of technical terms such as “machine learning,” “data science,” and “deep learning.”
+
+Regression models identified **experience and region** as significant drivers of compensation, while classification results showed that **AI relevance and remote flexibility** were strong differentiators between job categories.  
+These findings align with research showing that **skill intensity and geographic concentration** remain central to wage formation and occupational growth in technology-driven sectors [@Huang; @Zarifhonarvar].
+
+---
+
+### 4.3 Implications for Job Seekers
+
+The results suggest that **technology-focused roles reward adaptability, specialization, and continuous learning**.  
+Professionals who strengthen their skills in areas such as analytics, programming, and data interpretation are positioned to benefit most from the digital transformation of the labor market.  
+At the same time, the rise of **remote and hybrid work arrangements** is broadening access to high-value positions beyond traditional metropolitan centers, reflecting a more distributed and inclusive employment landscape [@George_George_2025; @Shen_1970].
+
+For job seekers, the key takeaway is not that automation removes opportunities but that it **changes the profile of work**.  
+As George (2024) and George & George (2025) note, the evolution of AI is driving **job shifting rather than job loss**, creating new pathways that integrate human expertise with data-driven systems.  
+Those who invest in flexible, cross-disciplinary skills will be best equipped to thrive in this environment.
+
+---
+
+### References
