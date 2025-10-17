@@ -19,8 +19,3 @@ bibliography: references.bib
 csl: csl/econometrica.csl
 ---
 
-
-
-## Text Preprocessing
-## Keyword/Topic Insights
-## Skill Extraction (optional)

@@ -1,0 +1,45 @@
+---
+title: "Evaluating Personal Job Market Prospects in 2024"
+subtitle: "Ai vs Non-Ai Careers - Final Report"
+author:
+  - name: "Group 1"
+    affiliation: "Boston University"
+  - name: "Amogh Challa"
+    affiliation: "Boston University"
+  - name: "Othmane Elouardi"
+    affiliation: "Boston University"
+date: "September 25, 2025"
+date-modified: today
+date-format: long
+page-layout: article
+toc: true
+toc-location: right
+cap-location: bottom   
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    toc-location: right
+  docx:
+    toc: true
+    number-sections: true
+    
+
+bibliography: references.bib
+csl: csl/econometrica.csl
+---
+
+
+{{< include introduction.qmd >}}
+
+{{< include data_cleaning.qmd >}}
+
+{{< include eda.qmd >}}
+
+{{< include skill_gap_analysis.qmd >}}
+
+{{< include ml_methods.qmd >}}
+
+{{< include nlp_methods.qmd >}}
