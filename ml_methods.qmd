@@ -207,3 +207,146 @@ labels={"value":"Count","variable":"Cluster","index":"SOC Category"}
 
 
 ```
+
+## Supervised Learning — Salary Regression with XGBoost
+
+```{python}
+#| label: supervised-salary-regression
+#| echo: true
+#| warning: false
+#| fig-width: 9
+#| fig-height: 6
+
+import numpy as np, pandas as pd
+import plotly.express as px, plotly.graph_objects as go
+from pathlib import Path
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import r2_score, mean_squared_error
+from sklearn.preprocessing import StandardScaler
+from IPython.display import display, Markdown
+
+np.random.seed(42)
+
+# ---------- LOAD ----------
+
+DATA = Path("Data/lightcast_job_postings.csv")
+df = pd.read_csv(DATA, low_memory=False)
+display(Markdown(f"**Loaded** `{DATA.name}` — shape: {df.shape[0]:,} × {df.shape[1]}"))
+
+# ---------- SALARY (flat logic, no indents) ----------
+
+salary_main = pd.to_numeric(df.get("SALARY"), errors="coerce")
+pay_period = df.get("ORIGINAL_PAY_PERIOD")
+
+pp = pay_period.astype(str).str.lower().str.strip() if pay_period is not None else pd.Series("year", index=df.index)
+is_annual = pp.isin(["year", "annual", "annually", "yr"])
+salary_main = salary_main.where(is_annual, np.nan)
+
+salary_from = pd.to_numeric(df.get("SALARY_FROM"), errors="coerce")
+salary_to   = pd.to_numeric(df.get("SALARY_TO"),   errors="coerce")
+salary_alt  = (salary_from + salary_to) / 2
+salary_alt  = salary_alt.where(is_annual, np.nan)
+salary      = salary_main.where(~salary_main.isna(), salary_alt)
+salary      = salary.mask((salary < 20000) | (salary > 400000))  # trim outliers
+
+# ---------- FEATURES ----------
+
+exp_min = pd.to_numeric(df.get("MIN_YEARS_EXPERIENCE"), errors="coerce")
+exp_max = pd.to_numeric(df.get("MAX_YEARS_EXPERIENCE"), errors="coerce")
+experience = exp_min.where(~exp_min.isna(), exp_max)
+experience = experience.fillna((exp_min + exp_max) / 2)
+
+remote = df.get("REMOTE_TYPE_NAME").astype(str).str.lower().isin(
+["remote", "hybrid", "remote/hybrid", "remote - usa", "remote - us"]
+).astype("int8")
+
+state = df.get("STATE_NAME").astype(str)
+top_states = state.value_counts().nlargest(8).index
+state_8 = state.where(state.isin(top_states), "OTHER")
+state_dummies = pd.get_dummies(state_8, prefix="state", dtype="int8")
+
+X = pd.concat([
+pd.DataFrame({"experience": experience, "remote": remote}),
+state_dummies
+], axis=1)
+
+# Keep only rows with valid salary
+
+valid = salary.notna() & X.notna().any(axis=1)
+X = X.loc[valid].fillna(0)
+y = salary.loc[valid]
+
+display(Markdown(f"- **Training set size:** {len(X):,} rows, {X.shape[1]} features"))
+
+# ---------- TRAIN/TEST SPLIT ----------
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
+
+# ---------- SCALE NUMERIC ----------
+
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# ---------- MODEL A: Linear Regression ----------
+
+linreg = LinearRegression()
+linreg.fit(X_train_scaled, y_train)
+y_pred_lr = linreg.predict(X_test_scaled)
+
+r2_lr = r2_score(y_test, y_pred_lr)
+rmse_lr = np.sqrt(mean_squared_error(y_test, y_pred_lr))
+
+display(Markdown(f"### Multiple Linear Regression Results"))
+display(Markdown(f"**R²:** {r2_lr:.3f}  **RMSE:** ${rmse_lr:,.0f}"))
+
+# Scatter: Actual vs Predicted
+
+fig_lr = px.scatter(
+x=y_test, y=y_pred_lr,
+labels={"x":"Actual Salary","y":"Predicted Salary"},
+title="Linear Regression — Actual vs Predicted Salary"
+)
+fig_lr.add_trace(go.Scatter(
+x=[y.min(), y.max()], y=[y.min(), y.max()],
+mode="lines", name="Ideal", line=dict(color="red", dash="dot")
+))
+fig_lr.update_layout(margin=dict(l=10, r=10, t=60, b=10))
+fig_lr.show()
+
+# ---------- MODEL B: Random Forest ----------
+
+rf = RandomForestRegressor(n_estimators=120, random_state=42, max_depth=10, n_jobs=-1)
+rf.fit(X_train, y_train)
+y_pred_rf = rf.predict(X_test)
+
+r2_rf = r2_score(y_test, y_pred_rf)
+rmse_rf = np.sqrt(mean_squared_error(y_test, y_pred_rf))
+
+display(Markdown(f"### Random Forest Regression Results"))
+display(Markdown(f"**R²:** {r2_rf:.3f}  **RMSE:** ${rmse_rf:,.0f}"))
+
+# Feature Importance
+
+importances = pd.Series(rf.feature_importances_, index=X.columns).sort_values(ascending=True)
+fig_imp = px.bar(
+importances, orientation="h",
+title="Random Forest Feature Importance",
+labels={"value":"Importance","index":"Feature"}
+)
+fig_imp.update_layout(margin=dict(l=10, r=10, t=60, b=10))
+fig_imp.show()
+
+# ---------- COMPARISON ----------
+
+results_df = pd.DataFrame({
+"Model": ["Linear Regression", "Random Forest"],
+"R²": [r2_lr, r2_rf],
+"RMSE": [rmse_lr, rmse_rf]
+})
+display(Markdown("### Model Comparison Summary"))
+display(results_df.round(3))
+
+```
