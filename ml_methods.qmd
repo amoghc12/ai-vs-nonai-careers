@@ -548,3 +548,140 @@ else:
     ).update_layout(margin=dict(l=10,r=10,t=60,b=10)).show()
 
 ```
+
+
+# Modeling Requirements
+
+```{python}
+#| label: modeling-requirements
+#| echo: true
+#| warning: false
+#| fig-width: 9
+#| fig-height: 6
+
+import numpy as np, pandas as pd
+import plotly.express as px
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression, LogisticRegression
+from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import r2_score, mean_squared_error, accuracy_score, f1_score, confusion_matrix
+from IPython.display import display, Markdown
+
+# ---------- Reload Lightcast Dataset ----------
+df = pd.read_csv("Data/lightcast_job_postings.csv", low_memory=False)
+df.columns = [c.lower() for c in df.columns]
+
+# ---------- Prepare Numeric Features ----------
+salary_main = pd.to_numeric(df.get("salary"), errors="coerce")
+salary_from = pd.to_numeric(df.get("salary_from"), errors="coerce")
+salary_to   = pd.to_numeric(df.get("salary_to"), errors="coerce")
+salary = salary_main.where(~salary_main.isna(), (salary_from + salary_to)/2)
+salary = salary.mask((salary < 20000) | (salary > 400000))
+
+exp_min = pd.to_numeric(df.get("min_years_experience"), errors="coerce")
+exp_max = pd.to_numeric(df.get("max_years_experience"), errors="coerce")
+experience = exp_min.where(~exp_min.isna(), exp_max).fillna((exp_min + exp_max)/2)
+
+remote_text = df.get("remote_type_name").astype(str).str.lower() if "remote_type_name" in df.columns else pd.Series("", index=df.index)
+remote = remote_text.isin(["remote","hybrid","remote/hybrid","remote - usa","remote - us"]).astype("int8")
+
+region = df["state_name"].astype(str) if "state_name" in df.columns else pd.Series("OTHER", index=df.index)
+top_regions = region.value_counts().nlargest(8).index
+region_dum = pd.get_dummies(region.where(region.isin(top_regions), "OTHER"), prefix="region", dtype="int8")
+
+# ---------- Combine ----------
+data = pd.concat([pd.DataFrame({"salary": salary, "experience": experience, "remote": remote}), region_dum], axis=1)
+data = data.fillna(0).astype(float)
+
+# ---------- (A) Regression Model: Predict Salary ----------
+reg_df = data[data["salary"] > 0].copy()
+Xr = reg_df.drop(columns="salary")
+yr = reg_df["salary"]
+
+Xr_train, Xr_test, yr_train, yr_test = train_test_split(Xr, yr, test_size=0.2, random_state=42)
+scaler = StandardScaler()
+Xr_train_s = scaler.fit_transform(Xr_train)
+Xr_test_s  = scaler.transform(Xr_test)
+
+# --- Linear Regression ---
+lr = LinearRegression().fit(Xr_train_s, yr_train)
+pred_lr = lr.predict(Xr_test_s)
+r2_lr = r2_score(yr_test, pred_lr)
+rmse_lr = np.sqrt(mean_squared_error(yr_test, pred_lr))
+
+# --- Random Forest Regression ---
+rf_reg = RandomForestRegressor(n_estimators=200, max_depth=12, random_state=42)
+rf_reg.fit(Xr_train, yr_train)
+pred_rf = rf_reg.predict(Xr_test)
+r2_rf = r2_score(yr_test, pred_rf)
+rmse_rf = np.sqrt(mean_squared_error(yr_test, pred_rf))
+
+display(Markdown(f"### Regression Evaluation"))
+display(Markdown(f"- Linear Regression → **R² = {r2_lr:.3f}**, **RMSE = ${rmse_lr:,.0f}**"))
+display(Markdown(f"- Random Forest → **R² = {r2_rf:.3f}**, **RMSE = ${rmse_rf:,.0f}**"))
+
+# Visualize prediction fit
+px.scatter(
+    x=yr_test, y=pred_lr,
+    labels={"x":"Actual Salary","y":"Predicted Salary"},
+    title="Linear Regression — Actual vs Predicted Salary"
+).add_shape(type="line", line=dict(dash="dot", color="red"), x0=0, y0=0, x1=400000, y1=400000).update_layout(margin=dict(l=10,r=10,t=50,b=10)).show()
+
+# ---------- (B) Classification Model: Predict AI vs Non-AI ----------
+text_cols = [c for c in ["title_raw","title","body","skills_name","specialized_skills_name","software_skills_name","common_skills_name"] if c in df.columns]
+txt = df[text_cols].fillna("").astype(str).agg(" ".join, axis=1).str.lower()
+pattern = r"\b(ai|artificial intelligence|machine learning|ml|deep learning|data scientist|nlp|llm|transformer|pytorch|tensorflow)\b"
+y_cls = txt.str.contains(pattern, regex=True).astype("int8")
+
+cls_df = pd.concat([data.drop(columns="salary"), y_cls.rename("is_ai")], axis=1)
+Xc = cls_df.drop(columns="is_ai")
+yc = cls_df["is_ai"]
+
+Xc_train, Xc_test, yc_train, yc_test = train_test_split(Xc, yc, test_size=0.2, random_state=42, stratify=yc)
+
+# --- Logistic Regression ---
+scaler = StandardScaler()
+Xc_train_s = scaler.fit_transform(Xc_train)
+Xc_test_s = scaler.transform(Xc_test)
+
+logr = LogisticRegression(max_iter=2000)
+logr.fit(Xc_train_s, yc_train)
+pred_log = logr.predict(Xc_test_s)
+acc_log = accuracy_score(yc_test, pred_log)
+f1_log = f1_score(yc_test, pred_log)
+cm_log = confusion_matrix(yc_test, pred_log)
+
+# --- Random Forest Classifier ---
+rfc = RandomForestClassifier(n_estimators=200, max_depth=12, random_state=42)
+rfc.fit(Xc_train, yc_train)
+pred_rf_c = rfc.predict(Xc_test)
+acc_rf_c = accuracy_score(yc_test, pred_rf_c)
+f1_rf_c = f1_score(yc_test, pred_rf_c)
+cm_rf_c = confusion_matrix(yc_test, pred_rf_c)
+
+display(Markdown("### Classification Evaluation"))
+display(Markdown(f"- Logistic Regression → **Accuracy = {acc_log:.3f}**, **F1 = {f1_log:.3f}**"))
+display(Markdown(f"- Random Forest → **Accuracy = {acc_rf_c:.3f}**, **F1 = {f1_rf_c:.3f}**"))
+
+# --- Confusion Matrices ---
+px.imshow(cm_log, text_auto=True, color_continuous_scale="Blues",
+           labels=dict(x="Predicted", y="Actual", color="Count"),
+           x=["Non-AI","AI"], y=["Non-AI","AI"],
+           title="Confusion Matrix — Logistic Regression").update_layout(margin=dict(l=10,r=10,t=50,b=10)).show()
+
+px.imshow(cm_rf_c, text_auto=True, color_continuous_scale="Blues",
+           labels=dict(x="Predicted", y="Actual", color="Count"),
+           x=["Non-AI","AI"], y=["Non-AI","AI"],
+           title="Confusion Matrix — Random Forest").update_layout(margin=dict(l=10,r=10,t=50,b=10)).show()
+
+# ---------- Feature Importance / Correlation ----------
+imp_df = pd.Series(rf_reg.feature_importances_, index=Xr.columns).sort_values(ascending=True)
+display(Markdown("### Feature Importance — Regression (Random Forest)"))
+px.bar(imp_df, orientation="h", title="Feature Importance (Regression)",
+       labels={"value":"Importance","index":"Feature"}).update_layout(margin=dict(l=10,r=10,t=60,b=10)).show()
+
+corr = data.corr(numeric_only=True)
+px.imshow(corr, color_continuous_scale="RdBu", title="Feature Correlation Heatmap").update_layout(margin=dict(l=10,r=10,t=50,b=10)).show()
+
+```
