@@ -178,23 +178,58 @@ Boxplots display the spread and median of annual salaries across the top industr
 # 3.4 Remote vs. On-Site Jobs ----------------------------------------
 H("3.4 Remote vs. On-Site Jobs")
 
-rt_col = next((c for c in ["REMOTE_TYPE_NAME","REMOTE_TYPE"] if c in df.columns), None)
+rt_col = next((c for c in ["REMOTE_TYPE_NAME", "REMOTE_TYPE"] if c in df.columns), None)
 if rt_col:
-    counts = (df[rt_col].fillna("Unknown").astype(str).str.strip()
-              .value_counts().rename_axis(rt_col).reset_index(name="postings"))
-    display(counts.set_index(rt_col))
+    # Clean and filter for only meaningful categories
+    valid_types = ["Remote", "Hybrid Remote", "Not Remote"]
+    df_remote = (
+        df[df[rt_col].isin(valid_types)]
+        .copy()
+    )
 
-    fig = px.pie(
-        counts, names=rt_col, values="postings",
-        title="Remote vs. On-Site Job Postings", hole=0.35
-    )
-    fig.update_traces(
-        textposition="inside",
-        textinfo="percent+label",
-        hovertemplate="%{label}: %{value:,}<extra></extra>"
-    )
-    fig.update_layout(title_x=0.02, margin=dict(l=10,r=10,b=10,t=40))
-    fig.show()
+    if len(df_remote) > 0:
+        counts = (
+            df_remote[rt_col]
+            .value_counts()
+            .rename_axis(rt_col)
+            .reset_index(name="postings")
+        )
+
+        display(counts.set_index(rt_col))
+
+        fig = px.pie(
+            counts,
+            names=rt_col,
+            values="postings",
+            title="Remote vs. On-Site Job Postings",
+            hole=0.35,
+            color_discrete_sequence=px.colors.qualitative.Set2
+        )
+
+        fig.update_traces(
+            textposition="inside",
+            textinfo="percent+label",
+            hovertemplate="%{label}: %{value:,}<extra></extra>"
+        )
+
+        fig.update_layout(
+            title_x=0.02,
+            margin=dict(l=10, r=10, b=10, t=40),
+            showlegend=True
+        )
+
+        fig.show()
+
+        # Optional note for transparency
+        excluded = len(df) - len(df_remote)
+        total = len(df)
+        display(Markdown(
+            f"**Note:** Excluded {excluded:,} postings without a defined remote type "
+            f"(out of {total:,} total postings) to highlight clear remote-work trends."
+        ))
+
+    else:
+        note("No valid remote-type data found after filtering.")
 else:
     note("**REMOTE_TYPE_NAME** not found. Skipping remote vs. on-site chart.")
 
