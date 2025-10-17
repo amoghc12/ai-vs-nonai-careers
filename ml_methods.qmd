@@ -350,3 +350,201 @@ display(Markdown("### Model Comparison Summary"))
 display(results_df.round(3))
 
 ```
+
+
+# Topic-Based Analysis Pathways
+
+## AI vs. Non-AI Career Analysis — Classification and Salary Insights
+
+```{python}
+#| label: ai-vs-nonai-analysis
+#| echo: true
+#| warning: false
+#| fig-width: 9
+#| fig-height: 6
+
+import numpy as np, pandas as pd, re
+import plotly.express as px, plotly.graph_objects as go
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import accuracy_score, f1_score, confusion_matrix
+from pathlib import Path
+from IPython.display import display, Markdown
+
+np.random.seed(42)
+
+# ---------- helpers that ALWAYS return Series ----------
+def num_series(frame: pd.DataFrame, col: str):
+    s = frame.get(col)
+    if isinstance(s, pd.Series):
+        return pd.to_numeric(s, errors="coerce")
+    return pd.Series(np.nan, index=frame.index, dtype="float64")
+
+def str_series(frame: pd.DataFrame, col: str, default=""):
+    s = frame.get(col)
+    if isinstance(s, pd.Series):
+        return s.astype(str)
+    return pd.Series(default, index=frame.index, dtype="object")
+
+# ---------- FORCE LOAD: Lightcast dataset ----------
+DATA = Path("Data/lightcast_job_postings.csv")
+df = pd.read_csv(DATA, low_memory=False)
+display(Markdown(f"**Loaded** `{DATA.name}` — shape: {df.shape[0]:,} × {df.shape[1]}"))
+
+# unify column names
+df.columns = [c.lower() for c in df.columns]
+
+# ---------- LABEL CREATION (is_ai_role) ----------
+if "is_ai_role" in df.columns:
+    y_init = df["is_ai_role"]
+else:
+    text_cols = [c for c in [
+        "title_raw","title","body",
+        "skills_name","specialized_skills_name","software_skills_name","common_skills_name"
+    ] if c in df.columns]
+    if len(text_cols) == 0:
+        y_init = pd.Series(0, index=df.index, dtype="int8")
+    else:
+        txt = df[text_cols].fillna("").astype(str).agg(" ".join, axis=1).str.lower()
+        pattern = r"\b(ai|artificial intelligence|machine learning|ml|deep learning|data scientist|nlp|llm|transformer|pytorch|tensorflow|computer vision)\b"
+        y_init = txt.str.contains(pattern, regex=True).astype("int8")
+
+# ---------- FEATURES ----------
+# Salary (annual-ish + outlier guard)
+salary_main = num_series(df, "salary")
+salary_from = num_series(df, "salary_from")
+salary_to   = num_series(df, "salary_to")
+salary_alt  = (salary_from + salary_to) / 2
+salary      = salary_main.where(~salary_main.isna(), salary_alt)
+salary      = salary.mask((salary < 20000) | (salary > 400000))
+
+# Experience
+exp_min     = num_series(df, "min_years_experience")
+exp_max     = num_series(df, "max_years_experience")
+experience  = exp_min.where(~exp_min.isna(), exp_max).fillna((exp_min + exp_max) / 2)
+experience  = experience.mask(experience < 0)
+
+# Remote
+remote_text = str_series(df, "remote_type_name") if "remote_type_name" in df.columns else str_series(df, "remote")
+remote      = remote_text.str.lower().isin(["remote","hybrid","remote/hybrid","remote - usa","remote - us"]).astype("int8")
+
+# Region / State top-8
+if "state_name" in df.columns:
+    region_raw = str_series(df, "state_name")
+elif "region" in df.columns:
+    region_raw = str_series(df, "region")
+else:
+    region_raw = pd.Series("", index=df.index)
+
+if region_raw.eq("").all():
+    region_dum = pd.DataFrame(index=df.index)
+else:
+    top_regions = region_raw.value_counts().nlargest(8).index
+    region_8 = region_raw.where(region_raw.isin(top_regions), "OTHER")
+    region_dum = pd.get_dummies(region_8, prefix="region", dtype="int8")
+
+# assemble
+work = pd.concat([
+    pd.DataFrame({
+        "salary": salary,
+        "experience": experience,
+        "remote": remote,
+        "is_ai_role": y_init.astype("int8")
+    }),
+    region_dum
+], axis=1)
+
+# ---------- DIAGNOSTICS ----------
+cls_counts = work["is_ai_role"].value_counts()
+display(Markdown(
+    f"- **Rows:** {len(work):,} • **AI roles:** {cls_counts.get(1,0):,} • **Non-AI:** {cls_counts.get(0,0):,}"
+))
+
+# ---------- DESCRIPTIVES ----------
+if work["salary"].notna().sum() > 50:
+    display(Markdown("### Salary Distribution — AI vs Non-AI"))
+    px.box(
+        work.dropna(subset=["salary"]),
+        x="is_ai_role", y="salary", color="is_ai_role",
+        labels={"is_ai_role":"Role (0=Non-AI, 1=AI)","salary":"Salary ($)"},
+        title="Salary Comparison — AI vs Non-AI"
+    ).update_layout(margin=dict(l=10,r=10,t=50,b=10)).show()
+
+display(Markdown("### Experience — AI vs Non-AI"))
+px.box(
+    work.dropna(subset=["experience"]),
+    x="is_ai_role", y="experience", color="is_ai_role",
+    labels={"is_ai_role":"Role (0=Non-AI, 1=AI)","experience":"Years"},
+    title="Experience Comparison — AI vs Non-AI"
+).update_layout(margin=dict(l=10,r=10,t=50,b=10)).show()
+
+# ---------- CLASSIFICATION ----------
+X = work[["salary","experience","remote"]].copy()
+y = work["is_ai_role"].copy()
+
+# If salary nearly all missing, drop it so rows don't collapse to 0
+if X["salary"].notna().sum() < 50:
+    X = X.drop(columns=["salary"])
+
+mask_rows = y.isin([0,1]) & X.notna().any(axis=1)
+X = X.loc[mask_rows].fillna(0)
+y = y.loc[mask_rows].astype(int)
+
+cls_counts2 = y.value_counts()
+display(Markdown(
+    f"- **Classification rows:** {len(X):,} • **0:** {cls_counts2.get(0,0):,} • **1:** {cls_counts2.get(1,0):,}"
+))
+
+if len(X) < 100 or cls_counts2.min() == 0:
+    display(Markdown("> ⚠️ Not enough balanced data to train classifiers (need both classes and ≥100 rows)."))
+else:
+    # stratify only if the smallest class will still have ≥2 rows in test split
+    test_size = 0.25
+    use_strat = (cls_counts2.min() * test_size) >= 2
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=test_size, random_state=42, stratify=(y if use_strat else None)
+    )
+
+    scaler = StandardScaler()
+    X_train_s = scaler.fit_transform(X_train)
+    X_test_s  = scaler.transform(X_test)
+
+    # Logistic Regression
+    logreg = LogisticRegression(max_iter=2000)
+    logreg.fit(X_train_s, y_train)
+    y_pred = logreg.predict(X_test_s)
+    acc = accuracy_score(y_test, y_pred); f1 = f1_score(y_test, y_pred)
+    display(Markdown(f"### Logistic Regression — Accuracy: **{acc:.3f}**, F1: **{f1:.3f}**"))
+    px.imshow(
+        confusion_matrix(y_test, y_pred, labels=[0,1]),
+        text_auto=True, color_continuous_scale="Blues",
+        labels=dict(x="Predicted", y="Actual", color="Count"),
+        x=["Non-AI","AI"], y=["Non-AI","AI"],
+        title="Confusion Matrix — Logistic Regression"
+    ).update_layout(margin=dict(l=10,r=10,t=50,b=10)).show()
+
+    # Random Forest
+    rf = RandomForestClassifier(n_estimators=200, max_depth=12, random_state=42, n_jobs=-1)
+    rf.fit(X_train, y_train)
+    y_pred_rf = rf.predict(X_test)
+    acc_rf = accuracy_score(y_test, y_pred_rf); f1_rf = f1_score(y_test, y_pred_rf)
+    display(Markdown(f"### Random Forest — Accuracy: **{acc_rf:.3f}**, F1: **{f1_rf:.3f}**"))
+    px.imshow(
+        confusion_matrix(y_test, y_pred_rf, labels=[0,1]),
+        text_auto=True, color_continuous_scale="Blues",
+        labels=dict(x="Predicted", y="Actual", color="Count"),
+        x=["Non-AI","AI"], y=["Non-AI","AI"],
+        title="Confusion Matrix — Random Forest"
+    ).update_layout(margin=dict(l=10,r=10,t=50,b=10)).show()
+
+    # Feature importances
+    pd.Series(rf.feature_importances_, index=X.columns).sort_values(ascending=True).pipe(
+        lambda s: px.bar(s, orientation="h",
+            title="Random Forest Feature Importances (AI vs Non-AI)",
+            labels={"value":"Importance","index":"Feature"})
+    ).update_layout(margin=dict(l=10,r=10,t=60,b=10)).show()
+
+```
